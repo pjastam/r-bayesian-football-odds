@@ -12,4 +12,4 @@ Rasmus predicted the results of the 50 last matches of the 2012/2013 Spanish LaL
 I slightly adpated his code to predict the results of the last two competition rounds (that is, the last 18 matches) of the 2018/2019 Dutch Eredivisie season. These predictions are based on soccer match data of the 2014/15-2018/19 seasons (5 seasons in total). The source of these data is [here](http://www.football-data.co.uk/netherlandsm.php). Out of the three model specifications that Rasmus developed, I used the most sophisticated model that allowed for year-to-year variability in team skill (called "iteration 3" by Rasmus).
 
 ## The results
-You can find the results of my application to the Dutch Eredivisie by opening the .html file in this repository in your webbrowser.
+You can find the results of my application to the Dutch Eredivisie by clicking [here](http://htmlpreview.github.com/?https://github.com/pjastam/r-bayesian-football-odds/blob/master/NL_eredivisie_2014_2019.nb.html). It then opens a tab in your browser with all the results including my explanations.
