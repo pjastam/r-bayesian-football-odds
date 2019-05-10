@@ -404,7 +404,7 @@ Now we see a number of games resulting in a draw. We also see that Ajax and FC U
 
 ## <a name="matchbetting"></a>Betting on the match outcome
 
-One of the powers with using Bayesian modeling and MCMC sampling is that once you have the MCMC samples of the parameters it is straight forward to calculate any quantity resulting from these estimates while still retaining the uncertainty of the parameter estimates. So let\'s look at the predicted distribution of the number of goals for the Ajax vs FC Utrecht game and see if I can use my model to make some money. I'll start by using the MCMC samples to calculate the distribution of the number of goals for Ajax and FC Utrecht.
+One of the powers with using Bayesian modeling and MCMC sampling is that once you have the MCMC samples of the parameters it is straight forward to calculate any quantity resulting from these estimates while still retaining the uncertainty of the parameter estimates. So let\'s look at the predicted distribution of the number of goals for AZ Alkmaar vs PSV Eindhoven game and see if I can use my model to make some money. I'll start by using the MCMC samples to calculate the distribution of the number of goals for AZ Alkmaar and PSV Eindhoven.
 
 ```{r}
 plot_goals <- function(home_goals, away_goals) { 
