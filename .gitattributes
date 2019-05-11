@@ -1,0 +1,5 @@
+#Source: https://stackoverflow.com/questions/34713765/github-changes-repository-to-wrong-language#34715182 and https://stackoverflow.com/questions/34713765/github-changes-repository-to-wrong-language#43520676
+
+data/* linguist-vendored
+results/* linguist-vendored
+*.* linguist-language=R
