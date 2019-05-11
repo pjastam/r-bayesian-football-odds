@@ -1864,7 +1864,22 @@ par(old_par)</code></pre>
 </div>
 <div id="betting-on-the-correct-score" class="section level2">
 <h2><a name="scorebetting"></a>Betting on the correct score</h2>
-<p>It is also possible to bet on the final goal outcome so let's calculate what payouts my model predicts for different goal outcomes.</p>
+<p>It is also possible to bet on the final goal outcome so let's calculate what payouts my model predicts for different goal outcomes. The payouts that William Hill reports are</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyMgICAgICAgIHwgUFNWICBQU1YgIFBTViAgUFNWICBQU1ZcbiMjICAgICAgICB8ICAwICAgIDEgICAgMiAgICAzICAgIDRcbiMjICAgLS0tLS18LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tXG4jIyAgIEFaIDAgfCAyMSAgIDEyICAgMTIgICAxNyAgIDI5XG4jIyAgIEFaIDEgfCAxOSAgIDcuNSAgMTIgICAxMiAgIDIxXG4jIyAgIEFaIDIgfCAyMyAgIDEzICAgMTEgICAxNyAgIDI5XG4jIyAgIEFaIDMgfCA0MSAgIDI2ICAgMjMgICAyOSAgIDUxXG4jIyAgIEFaIDQgfCA4MSAgIDUxICAgNjYgICAxMjYgIDgxXG5gYGAifQ== -->
+<pre class="r"><code>##        | PSV  PSV  PSV  PSV  PSV
+##        |  0    1    2    3    4
+##   -----|------------------------
+##   AZ 0 | 21   12   12   17   29
+##   AZ 1 | 19   7.5  12   12   21
+##   AZ 2 | 23   13   11   17   29
+##   AZ 3 | 41   26   23   29   51
+##   AZ 4 | 81   51   66   126  81</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>It follows that the 1 - 1 draw is also the most likely result at Wiliam Hill. Now, we are going to calculate the payouts that our model predicts.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
 <!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ29hbHNfcGF5b3V0IDwtIGxhcGx5KDA6NiwgZnVuY3Rpb24oaG9tZV9nb2FsKSB7XG4gIGxhcGx5KDA6NiwgZnVuY3Rpb24oYXdheV9nb2FsKSB7XG4gICAgMSAvIG1lYW4oaG9tZV9nb2FscyA9PSBob21lX2dvYWwgJiBhd2F5X2dvYWxzICA9PSBhd2F5X2dvYWwpXG4gIH0pXG59KVxuXG5jb2xuYW1lcyhnb2Fsc19wYXlvdXQpIDwtIHBhc3RlKFwiUFNWIEVpbmRob3ZlblwiLCAwOjYsIHNlcD1cIiAtIFwiKVxucm93bmFtZXMoZ29hbHNfcGF5b3V0KSA8LSBwYXN0ZShcIkFaIEFsa21hYXJcIiwgMDo2LCBzZXA9XCIgLSBcIilcbmdvYWxzX3BheW91dCA8LSByb3VuZChnb2Fsc19wYXlvdXQsIDEpXG5wcmludCh4dGFibGUoZ29hbHNfcGF5b3V0LCBhbGlnbj1cImNjY2NjY2NjXCIpLCB0eXBlPVwiaHRtbFwiKVxuYGBgIn0= -->
@@ -1881,7 +1896,7 @@ print(xtable(goals_payout, align=&quot;cccccccc&quot;), type=&quot;html&quot;)</
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
-<p>The most likely result is 1 - 1 with a predicted payout of 9.70, which can be compared to the William Hill payout of 7.50 for this bet. This, we can earn some extra money if we bet on this end score.</p>
+<p>The most likely result is 1 - 1 with a predicted payout of 9.70, which can be compared to the William Hill payout of 7.50 for this bet. Thus, William Hill thinks that a 1 - 1 draw is even likier than our model predicts. If we want to earn some extra money, we should bet on a 1 - 0 win for AZ, as the William Hill payout is 19 and our model predicts 17.50.</p>
 <p><a href="#index">Return to table of contents</a></p>
 </div>
 </div>

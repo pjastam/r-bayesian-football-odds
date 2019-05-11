@@ -2,7 +2,7 @@
 title: "Bayesian estimation of a Poisson model for Dutch football matches odds"
 author: "Piet Stam"
 date: "May 10th, 2019"
-output: md_document
+output: html_notebook
 ---
 
 > *Copyright 2019 [Piet Stam](http://www.pietstam.nl). The code and the README.md documentation are licensed under the Creative Commons [Attribution 4.0 International license](http://creativecommons.org/licenses/by/4.0/).* 
@@ -459,13 +459,26 @@ Using my simulated distribution of the number of goals I can calculate the predi
 1 / c(AZ =  mean(home_goals > away_goals), Draw = mean(home_goals == away_goals), PSV = mean(home_goals < away_goals))
 ```
 
-We should put our money on an AZ Alkmaar victory as the model predicts a payout of 3.82, while William Hill will give a slightly higher payout of 3.90 in case of a draw. Obviously, our model attributes a slightly higher probablity to a potential AZ victory over PSV than William Hill. 
+The most likely result is 1 - 1 with a predicted payout of 9.70, which can be compared to the William Hill payout of 7.50 for this bet. Thus, William Hill thinks that a 1 - 1 draw is even likier than our model predicts. If we want to earn some extra money, we should bet on a 1 - 0 win for AZ, as the William Hill payout is 19 and our model predicts 17.50.
 
 [Return to table of contents](#index)
 
 ## <a name="scorebetting"></a>Betting on the correct score
 
-It is also possible to bet on the final goal outcome so let\'s calculate what payouts my model predicts for different goal outcomes.
+It is also possible to bet on the final goal outcome so let\'s calculate what payouts my model predicts for different goal outcomes. The payouts that William Hill reports are
+
+```{r}
+##        | PSV  PSV  PSV  PSV  PSV
+##        |  0    1    2    3    4
+##   -----|------------------------
+##   AZ 0 | 21   12   12   17   29
+##   AZ 1 | 19   7.5  12   12   21
+##   AZ 2 | 23   13   11   17   29
+##   AZ 3 | 41   26   23   29   51
+##   AZ 4 | 81   51   66   126  81
+```
+
+It follows that the 1 - 1 draw is also the most likely result at Wiliam Hill. Now, we are going to calculate the payouts that our model predicts.
 
 ```{r results='asis'}
 goals_payout <- laply(0:6, function(home_goal) {
