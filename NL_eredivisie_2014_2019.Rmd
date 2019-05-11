@@ -436,7 +436,9 @@ home_goals <- rpois(n, exp(home_baseline + home_skill - away_skill))
 away_goals <- rpois(n, exp(away_baseline + away_skill - home_skill))
 ```
 
-Looking at summary of these two distributions shows that it will not be a close game but with a very big advantage for the home team Ajax.
+Looking at summary of these two distributions in the first two graphs below, it shows that AZ and PSV both have the biggest chance to score one goal (as the modus of both distributions equals 1). From the third graph it follows that the most likely goal difference is 0 or -1: either AZ and PSV draw (0), or PSV scores just one more goal than AZ (-1). In case of the latter, PSV turns out to be the match winner.
+
+The fourth graph shows the probability distribution of a PSV win ('away_win'), a draw ('equal') and AZ win ('home_win'). This graph underlines that a PSV win is a likely scenario: it has a probability of more than 50%. The fact that the balance topples in favor of PSV should then be due to the one goal difference that is attributed a great chance according to the third graph. Note, however, that the probability that PSV will *not* turn out as the match winner (i.e. a draw or a loss) is still almost 50%.
 
 ```{r fig.height=5}
 old_par <- par(mfrow = c(2, 2), mar=rep(2.2, 4))
