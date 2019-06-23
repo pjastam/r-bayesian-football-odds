@@ -187,43 +187,36 @@ The first thing to notice is that not all teams are equally good. Therefore, it 
 
 In its simplest form, the distribution of the number of goals for team $i$ when facing team $j$ is then
 
-<script type="math/tex; mode=display">Goals_{i,j} \sim \text{Poisson}(\lambda_{i,j})</script>
+$$Goals_{i,j} \sim \text{Poisson}(\lambda_{i,j})$$
 
-<script type="math/tex; mode=display">\log(\lambda_{i,j}) = \text{baseline} + \text{skill}_i - \text{skill}_j</script>
+$$\log(\lambda_{i,j}) = \text{baseline} + \text{skill}_i - \text{skill}_j$$
 
 where baseline is the log average number of goals when both teams are equally good. Note that this model description does not capture the variation in the number of goals among football seasons and between home vs away teams.
 
 If we do allow for the latter type of variation, then the distribution of the goal outcome of a match between home team $i$ and away team $j$ in season $t$ can be described as follows: 
 
-<script type="math/tex; mode=display">HomeGoals_{t,i,j} \sim \text{Poison}(\lambda_{\text{home},t,i,j})</script>
-
-<script type="math/tex; mode=display">AwayGoals_{t,i,j} \sim \text{Poison}(\lambda_{\text{away},t,i,j})</script>
-
-<script type="math/tex; mode=display">\log(\lambda_{\text{home},t,i,j}) = \text{baseline}_{\text{home},t} + \text{skill}_{t,i} - \text{skill}_{t,j}</script>
-
-<script type="math/tex; mode=display">\log(\lambda_{\text{away},t,i,j}) = \text{baseline}_{\text{away},t} + \text{skill}_{t,j} - \text{skill}_{t,i}</script>
+$$HomeGoals_{t,i,j} \sim \text{Poison}(\lambda_{\text{home},t,i,j})$$
+$$AwayGoals_{t,i,j} \sim \text{Poison}(\lambda_{\text{away},t,i,j})$$
+$$\log(\lambda_{\text{home},t,i,j}) = \text{baseline}_{\text{home},t} + \text{skill}_{t,i} - \text{skill}_{t,j}$$
+$$\log(\lambda_{\text{away},t,i,j}) = \text{baseline}_{\text{away},t} + \text{skill}_{t,j} - \text{skill}_{t,i}$$
 
 Note that the <code>baseline</code> is split into <code>home_baseline</code> and <code>away_baseline</code> in order to account for the home advantage. 
 
 I set the prior distributions over the baseline and the skill of all $n$ teams in season $t$ to:
 
-<script type="math/tex; mode=display">\text{baseline}_{\text{home},t} \sim \text{Normal}(0, 4^2)</script>
-
-<script type="math/tex; mode=display">\text{baseline}_{\text{away},t} \sim \text{Normal}(0, 4^2)</script>
+$$\text{baseline}_{\text{home},t} \sim \text{Normal}(0, 4^2)$$
+$$\text{baseline}_{\text{away},t} \sim \text{Normal}(0, 4^2)$$
 
 I set the prior distributions over the skill of all $n$ teams in season $t$ to:
 
-<script type="math/tex; mode=display">\text{skill}_{t,1 \ldots n} \sim \text{Normal}(\text{skill}_{t-1,1 \ldots n}, \sigma_{\text{seasons}}^2)</script>
-
-<script type="math/tex; mode=display">\sigma_\text{seasons} \sim \text{Uniform}(0, 3)</script>
+$$\text{skill}_{t,1 \ldots n} \sim \text{Normal}(\text{skill}_{t-1,1 \ldots n}, \sigma_{\text{seasons}}^2)$$
+$$\sigma_\text{seasons} \sim \text{Uniform}(0, 3)$$
 
 and the priors over the skill of all $n$ teams in their $first$ season modeled as:
 
-<script type="math/tex; mode=display">\text{skill}_{1,1 \ldots n} \sim \text{Normal}(\mu_\text{teams}, \sigma_{\text{teams}}^2)</script>
-
-<script type="math/tex; mode=display">\mu_\text{teams} \sim \text{Normal}(0, 4^2)</script>
-
-<script type="math/tex; mode=display">\sigma_\text{teams} \sim \text{Uniform}(0, 3)</script>
+$$\text{skill}_{1,1 \ldots n} \sim \text{Normal}(\mu_\text{teams}, \sigma_{\text{teams}}^2)$$
+$$\mu_\text{teams} \sim \text{Normal}(0, 4^2)$$
+$$\sigma_\text{teams} \sim \text{Uniform}(0, 3)$$
 
 We choose very vague priors. For example, the prior on the baseline have a SD of 4 but since this is on the log scale of the mean number of goals it corresponds to one SD from the mean $0$ covering the range of $[0.02, 54.6]$ goals. A very wide prior indeed.
 
