@@ -2,7 +2,9 @@
 title: "Bayesian estimation of a Poisson model for Dutch football matches odds"
 author: "Piet Stam"
 date: "May 10th, 2019"
-output: html_notebook
+output:
+  html_document:
+    df_print: paged
 ---
 
 > *Copyright 2019 [Piet Stam](http://www.pietstam.nl). The code and the README.md documentation are licensed under the Creative Commons [Attribution 4.0 International license](http://creativecommons.org/licenses/by/4.0/).* 
@@ -59,11 +61,11 @@ library(rjags)
 library(coda)
 library(mcmcplots)
 library(stringr)
-library(plyr)
+library(dplyr)
 library(xtable)
 library(ggplot2)
 
-from_year <- 2014
+from_year <- 2017
 to_year <- 2019
 
 source("functions/plotPost.R")
@@ -79,7 +81,7 @@ col_name <- function(name, ...) {
 We first read the Dutch soccer match data of the 2014/15-2018/19 Dutch Eredivisie seasons from the original csv-files and cache them. The result is a database called `eredivisie`.
 
 ```{r raw_data, cache = TRUE, cache.extra = file.info(list.files(path = "test", pattern = ".csv", full.names = TRUE))}
-source(paste0("functions/Read_N",from_year,to_year,".R"))
+source(paste0("functions/Import_Data_Eredivisie.R"))
 ```
 
 Then the cached `eredivisie` data are cleaned and new variables are created.
@@ -105,7 +107,7 @@ data_list <- list(HomeGoals = eredivisie$HomeGoals, AwayGoals = eredivisie$AwayG
 The data set <code>eredivisie</code> contains data from 5 different seasons. In this model we allow for variability in year-to-year team performance. This variablitity in team performance can be demonstrated by the following diagram, which shows that some teams do not even participate in all seasons in the <code>eredivisie</code> data set, as a result of dropping out of the first division:
 
 ```{r participation_by_season, fig.height=5, fig.width=7}
-qplot(Season, HomeTeam, data=d, ylab="Team", xlab = "Season")
+qplot(Season, HomeTeam, data=eredivisie, ylab="Team", xlab = "Season")
 ```
 
 Turning this into a JAGS model results in the following string. Note that the model loops over all seasons and all match results. JAGS parameterizes the normal distribution with precision (the reciprocal of the variance) instead of variance so the hyper priors have to be converted. Finally, we \"anchor\" the skill of one team to a constant otherwise the mean skill can drift away freely. Doing these adjustments results in the following model description:
@@ -176,7 +178,7 @@ plot(s3[, "season_sigma"])
 We can also calculate the default home advantage by looking at the difference between <code>exp(home_baseline) - exp(away_baseline)</code>. The next graph shows that there is a home advantage of more than 0.4 goals, on average, and it differs significantly from zero.
 
 ```{r overall_home_advantage}
-plotPost(exp(ms3[,col_name("home_baseline",5)]) - exp(ms3[,col_name("away_baseline",5)]), compVal = 0, xlab = "Home advantage in number of goals")
+plotPost(exp(ms3[,col_name("home_baseline",to_year-from_year)]) - exp(ms3[,col_name("away_baseline",to_year-from_year)]), compVal = 0, xlab = "Home advantage in number of goals")
 ```
 
 [Return to table of contents](#index)
@@ -231,8 +233,8 @@ We'll start by ranking the teams of the <code>Eredivisie</code> using the estima
 Consequently, as Rasmus noted before, the skill parameters are difficult to interpret as they are relative to the skill of the team that had its skill parameter "anchored" at zero. To put them on a more interpretable scale the skill paramters are first zero centered by subtracting the mean skill of all teams. Then he added the home baseline and exponentiated the resulting values. These rescaled skill parameters are now on the scale of expected number of goals when playing as a home team.
 
 ```{r team_skill, fig.height=8, dpi=90}
-team_skill <- ms3[, str_detect(string=colnames(ms3), "skill\\[5,")]
-team_skill <- (team_skill - rowMeans(team_skill)) + ms3[, "home_baseline[5]"]
+team_skill <- ms3[, str_detect(string=colnames(ms3), paste0("skill\\[",to_year-from_year,","))]
+team_skill <- (team_skill - rowMeans(team_skill)) + ms3[, paste0("home_baseline[",to_year-from_year,"]")]
 team_skill <- exp(team_skill)
 colnames(team_skill) <- teams
 team_skill <- team_skill[,order(colMeans(team_skill), decreasing=T)]
@@ -257,7 +259,7 @@ In the <code>eredivisie</code> data set included in this project, the results of
   - The most likely match result for each game.
   - A random sample from the distributions of credible home scores, away scores and match results. This is how the Eredivisie actually could have played out in an alternative reality.
 
-```{r model_predictions, tidy=FALSE}
+```{r model_predictions, cache=TRUE, dependson="monte_carlo", tidy=FALSE}
 n <- nrow(ms3)
 m3_pred <- sapply(1:nrow(eredivisie), function(i) {
   home_team <- which(teams == eredivisie$HomeTeam[i])
