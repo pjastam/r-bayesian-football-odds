@@ -110,7 +110,7 @@ qplot(Season, HomeTeam, data=d, ylab="Team", xlab = "Season")
 
 Turning this into a JAGS model results in the following string. Note that the model loops over all seasons and all match results. JAGS parameterizes the normal distribution with precision (the reciprocal of the variance) instead of variance so the hyper priors have to be converted. Finally, we \"anchor\" the skill of one team to a constant otherwise the mean skill can drift away freely. Doing these adjustments results in the following model description:
 
-```{r jags_model_description, tidy=FALSE}
+```{r jags_model_description, cache=TRUE, tidy=FALSE}
 m3_string <- "model {
 for(i in 1:n_games) {
 HomeGoals[i] ~ dpois(lambda_home[Season[i], HomeTeam[i],AwayTeam[i]])
@@ -154,7 +154,7 @@ season_sigma ~ dunif(0, 3)
 
 We then run this model directly from R using RJAGS and the <code>textConnection</code> function. This takes about half an hour on my computer, but of course this depends on the configuration at hand.
 
-```{r monte_carlo, results='hide'}
+```{r monte_carlo, cache=TRUE, dependson="jags_model_description", results='hide'}
 # Compiling the model
 m3 <- jags.model(textConnection(m3_string), data=data_list, n.chains=3, n.adapt=10000)
 # Burning some samples on the altar of the MCMC god
