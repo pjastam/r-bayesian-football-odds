@@ -61,12 +61,10 @@ library(rjags)
 library(coda)
 library(mcmcplots)
 library(stringr)
+library(plyr)
 library(dplyr)
 library(xtable)
 library(ggplot2)
-
-from_year <- 2017
-to_year <- 2019
 
 source("functions/plotPost.R")
 
@@ -81,6 +79,8 @@ col_name <- function(name, ...) {
 We first read the Dutch soccer match data of the 2014/15-2018/19 Dutch Eredivisie seasons from the original csv-files and cache them. The result is a database called `eredivisie`.
 
 ```{r raw_data, cache = TRUE, cache.extra = file.info(list.files(path = "test", pattern = ".csv", full.names = TRUE))}
+from_year <- 2017
+to_year <- 2019
 source(paste0("functions/Import_Data_Eredivisie.R"))
 ```
 
@@ -156,7 +156,7 @@ season_sigma ~ dunif(0, 3)
 
 We then run this model directly from R using RJAGS and the <code>textConnection</code> function. This takes about half an hour on my computer, but of course this depends on the configuration at hand.
 
-```{r monte_carlo, cache=TRUE, dependson="jags_model_description", results='hide'}
+```{r monte_carlo, cache=TRUE, dependson="processed_data", cache.extra = "jags_model_description", results='hide'}
 # Compiling the model
 m3 <- jags.model(textConnection(m3_string), data=data_list, n.chains=3, n.adapt=10000)
 # Burning some samples on the altar of the MCMC god
@@ -245,7 +245,7 @@ par(old_par)
 
 Two teams are clearly ahead of the rest, Ajax and PSV. Let\'s look at the credible difference between these two teams. Ajax is a better team than PSV with a probabilty of 74%, i.e. the odds in favor of Ajax are 74% / 26% = 3. So, on average, PSV only wins one out of four games that they play against Ajax.
 
-```{r team_skill_PSV_Ajax, fig.height=3, fig.width=7, results='hide'}
+```{r team_skill_PSV_Ajax, fig.height=3, fig.width=7}
 plotPost(team_skill[, "Ajax"] - team_skill[, "PSV Eindhoven"], compVal = 0, xlab = "← PSV     vs     Ajax →")
 ```
 [Return to table of contents](#index)
@@ -322,6 +322,9 @@ For most games the expected number of goals are 2. That is, even if your safest 
 The distribution of the mode and the mean number of goals doesn't look remotely like the actual number of goals. This was not to be expected, we would however expect the distribution of randomized goals (where for each match the number of goals has been randomly drawn from that match's predicted home goal distribution) to look similar to the actual number of home goals. Looking at the histogram below, this seems to be the case.
 
 ```{r rand_home_goal, fig.height=3, fig.width=4}
+#hist(m3_pred[ , "rand_home_goal"], xlim=c(-0.5, 10),
+#    main = "Distribution of randomly drawn \n score by a home team in a match",
+#    xlab = "")
 hist(m3_pred[ , "rand_home_goal"], breaks= (-1:10) + 0.5, xlim=c(-0.5, 10),
     main = "Distribution of randomly drawn \n score by a home team in a match",
     xlab = "")
