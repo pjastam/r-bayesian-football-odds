@@ -295,14 +295,14 @@ First let\'s compare the distribution of the actual number of goals in the data 
 First the actual distribution of the number of goals for the home teams.
 
 ```{r hist_home_goal, fig.height=3, fig.width=4}
-hist(eredivisie$HomeGoals, breaks= (-1:10) + 0.5, xlim=c(-0.5, 10), main = "Distribution of the number of goals\nscored by a home team in a match",
+hist(eredivisie$HomeGoals, breaks= (-1:max(eredivisie$HomeGoals)) + 0.5, xlim=c(-0.5, 10), main = "Distribution of the number of goals\nscored by a home team in a match",
     xlab = "")
 ```
 
 This next plot shows the distribution of the modes from the predicted distribution of home goals from each game. That is, what is the most probable outcome, for the home team, in each game.
 
 ```{r mode_home_goal, fig.height=3, fig.width=4}
-hist(m3_pred[ , "mode_home_goal"], breaks= (-1:10) + 0.5, xlim=c(-0.5, 10),
+hist(m3_pred[ , "mode_home_goal"], breaks= (-1:max(m3_pred[ , "mode_home_goal"])) + 0.5, xlim=c(-0.5, 10),
     main = "Distribution of predicted most \nprobable score by a home team in\na match",
     xlab = "")
 ```
@@ -312,7 +312,7 @@ For almost all games the single most likely number of goals is one. Actually, if
 Let\'s instead look at the distribution of the predicted mean number of home goals in each game.
 
 ```{r mean_home_goal, fig.height=3, fig.width=4}
-hist(m3_pred[ , "mean_home_goal"], breaks= (-1:10) + 0.5, xlim=c(-0.5, 10),
+hist(m3_pred[ , "mean_home_goal"], breaks= (-1:max(m3_pred[ , "mean_home_goal"])) + 0.5, xlim=c(-0.5, 10),
     main = "Distribution of predicted mean \n score by a home team in a match",
     xlab = "")
 ```
@@ -325,7 +325,7 @@ The distribution of the mode and the mean number of goals doesn't look remotely 
 #hist(m3_pred[ , "rand_home_goal"], xlim=c(-0.5, 10),
 #    main = "Distribution of randomly drawn \n score by a home team in a match",
 #    xlab = "")
-hist(m3_pred[ , "rand_home_goal"], breaks= (-1:10) + 0.5, xlim=c(-0.5, 10),
+hist(m3_pred[ , "rand_home_goal"], breaks= (-1:max(m3_pred[ , "rand_home_goal"])) + 0.5, xlim=c(-0.5, 10),
     main = "Distribution of randomly drawn \n score by a home team in a match",
     xlab = "")
 ```
