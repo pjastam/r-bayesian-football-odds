@@ -1,10 +1,8 @@
 ---
 title: "Bayesian estimation of a Poisson model for Dutch football matches odds"
 author: "Piet Stam"
-date: "May 10th, 2019"
-output:
-  html_document:
-    df_print: paged
+date: "July 11th, 2019"
+output: html_document
 ---
 
 > *Copyright 2019 [Piet Stam](http://www.pietstam.nl). The code and the README.md documentation are licensed under the Creative Commons [Attribution 4.0 International license](http://creativecommons.org/licenses/by/4.0/).* 
@@ -16,17 +14,21 @@ output:
      - [Acknowledgements](#acknowledgements)
      
   2. [Data and methods](#datamethods)
-     - [Read data](#kickoff)
      - [Theoretical description of the model](#maths)
+     - [Read data](#kickoff)
+     
+  3. [Model estimation, simulation and validation](#est_sim_val)
+     - [Model estimation](#estimation)
+     - [Generating the predictions](#simulation)
      - [Model validation](#validation)
      
-  3. [Results](#results)
+  4. [Results](#results)
      - [The ranking of the teams](#ranking)
      - [Predicting the future](#prediction)
      - [Betting on the match outcome](#matchbetting)
      - [Betting on the correct score](#scorebetting)
      
-  4. [Appendix](#appendix)
+  5. [Appendix](#appendix)
      - [Markdown instructions](#instructions)
      - [Who do you call?](#contact)
 
@@ -49,6 +51,47 @@ You can find my code at [GitHub](https://github.com/pjastam/r-bayesian-football-
 [Return to table of contents](#index)
 
 # <a name="datamethods"></a>Data and methods
+
+## <a name="maths"></a>Theoretical description of the model
+
+The first thing to notice is that not all teams are equally good. Therefore, it will be assumed that all teams have a latent skill variable and the skill of a team *minus* the skill of the opposing team defines the predicted outcome of a game. As the number of goals are assumed to be Poisson distributed it is natural that the skills of the teams are on the log scale of the mean of the distribution.
+
+In its simplest form, the distribution of the number of goals for team $i$ when facing team $j$ is then
+
+$$Goals_{i,j} \sim \text{Poisson}(\lambda_{i,j})$$
+
+$$\log(\lambda_{i,j}) = \text{baseline} + \text{skill}_i - \text{skill}_j$$
+
+where baseline is the log average number of goals when both teams are equally good. Note that this model description does not capture the variation in the number of goals among football seasons and between home vs away teams.
+
+If we do allow for the latter type of variation, then the distribution of the goal outcome of a match between home team $i$ and away team $j$ in season $t$ can be described as follows: 
+
+$$HomeGoals_{t,i,j} \sim \text{Poison}(\lambda_{\text{home},t,i,j})$$
+$$AwayGoals_{t,i,j} \sim \text{Poison}(\lambda_{\text{away},t,i,j})$$
+$$\log(\lambda_{\text{home},t,i,j}) = \text{baseline}_{\text{home},t} + \text{skill}_{t,i} - \text{skill}_{t,j}$$
+$$\log(\lambda_{\text{away},t,i,j}) = \text{baseline}_{\text{away},t} + \text{skill}_{t,j} - \text{skill}_{t,i}$$
+
+Note that the <code>baseline</code> is split into <code>home_baseline</code> and <code>away_baseline</code> in order to account for the home advantage. 
+
+I set the prior distributions over the baseline and the skill of all $n$ teams in season $t$ to:
+
+$$\text{baseline}_{\text{home},t} \sim \text{Normal}(0, 4^2)$$
+$$\text{baseline}_{\text{away},t} \sim \text{Normal}(0, 4^2)$$
+
+I set the prior distributions over the skill of all $n$ teams in season $t$ to:
+
+$$\text{skill}_{t,1 \ldots n} \sim \text{Normal}(\text{skill}_{t-1,1 \ldots n}, \sigma_{\text{seasons}}^2)$$
+$$\sigma_\text{seasons} \sim \text{Uniform}(0, 3)$$
+
+and the priors over the skill of all $n$ teams in their $first$ season modeled as:
+
+$$\text{skill}_{1,1 \ldots n} \sim \text{Normal}(\mu_\text{teams}, \sigma_{\text{teams}}^2)$$
+$$\mu_\text{teams} \sim \text{Normal}(0, 4^2)$$
+$$\sigma_\text{teams} \sim \text{Uniform}(0, 3)$$
+
+We choose very vague priors. For example, the prior on the baseline have a SD of 4 but since this is on the log scale of the mean number of goals it corresponds to one SD from the mean $0$ covering the range of $[0.02, 54.6]$ goals. A very wide prior indeed.
+
+[Return to table of contents](#index)
 
 ## <a name="kickoff"></a>Read data
 
@@ -111,6 +154,12 @@ The data set <code>eredivisie</code> contains data from 5 different seasons. In 
 ```{r participation_by_season, fig.height=5, fig.width=7}
 qplot(Season, HomeTeam, data=d, ylab="Team", xlab = "Season")
 ```
+
+[Return to table of contents](#index)
+
+# <a name="est_sim_val"></a>Estimation, simulation and validation
+
+## <a name="estimation"></a>Model estimation
 
 Turning this into a JAGS model results in the following string. Note that the model loops over all seasons and all match results. JAGS parameterizes the normal distribution with precision (the reciprocal of the variance) instead of variance so the hyper priors have to be converted. Finally, we \"anchor\" the skill of one team to a constant otherwise the mean skill can drift away freely. Doing these adjustments results in the following model description:
 
@@ -185,74 +234,7 @@ plotPost(exp(ms3[,col_name("home_baseline",to_year-from_year)]) - exp(ms3[,col_n
 
 [Return to table of contents](#index)
 
-## <a name="maths"></a>Theoretical description of the model
-
-The first thing to notice is that not all teams are equally good. Therefore, it will be assumed that all teams have a latent skill variable and the skill of a team *minus* the skill of the opposing team defines the predicted outcome of a game. As the number of goals are assumed to be Poisson distributed it is natural that the skills of the teams are on the log scale of the mean of the distribution.
-
-In its simplest form, the distribution of the number of goals for team $i$ when facing team $j$ is then
-
-$$Goals_{i,j} \sim \text{Poisson}(\lambda_{i,j})$$
-
-$$\log(\lambda_{i,j}) = \text{baseline} + \text{skill}_i - \text{skill}_j$$
-
-where baseline is the log average number of goals when both teams are equally good. Note that this model description does not capture the variation in the number of goals among football seasons and between home vs away teams.
-
-If we do allow for the latter type of variation, then the distribution of the goal outcome of a match between home team $i$ and away team $j$ in season $t$ can be described as follows: 
-
-$$HomeGoals_{t,i,j} \sim \text{Poison}(\lambda_{\text{home},t,i,j})$$
-$$AwayGoals_{t,i,j} \sim \text{Poison}(\lambda_{\text{away},t,i,j})$$
-$$\log(\lambda_{\text{home},t,i,j}) = \text{baseline}_{\text{home},t} + \text{skill}_{t,i} - \text{skill}_{t,j}$$
-$$\log(\lambda_{\text{away},t,i,j}) = \text{baseline}_{\text{away},t} + \text{skill}_{t,j} - \text{skill}_{t,i}$$
-
-Note that the <code>baseline</code> is split into <code>home_baseline</code> and <code>away_baseline</code> in order to account for the home advantage. 
-
-I set the prior distributions over the baseline and the skill of all $n$ teams in season $t$ to:
-
-$$\text{baseline}_{\text{home},t} \sim \text{Normal}(0, 4^2)$$
-$$\text{baseline}_{\text{away},t} \sim \text{Normal}(0, 4^2)$$
-
-I set the prior distributions over the skill of all $n$ teams in season $t$ to:
-
-$$\text{skill}_{t,1 \ldots n} \sim \text{Normal}(\text{skill}_{t-1,1 \ldots n}, \sigma_{\text{seasons}}^2)$$
-$$\sigma_\text{seasons} \sim \text{Uniform}(0, 3)$$
-
-and the priors over the skill of all $n$ teams in their $first$ season modeled as:
-
-$$\text{skill}_{1,1 \ldots n} \sim \text{Normal}(\mu_\text{teams}, \sigma_{\text{teams}}^2)$$
-$$\mu_\text{teams} \sim \text{Normal}(0, 4^2)$$
-$$\sigma_\text{teams} \sim \text{Uniform}(0, 3)$$
-
-We choose very vague priors. For example, the prior on the baseline have a SD of 4 but since this is on the log scale of the mean number of goals it corresponds to one SD from the mean $0$ covering the range of $[0.02, 54.6]$ goals. A very wide prior indeed.
-
-[Return to table of contents](#index)
-
-# <a name="results"></a>Results
-
-## <a name="ranking"></a>The ranking of the teams
-
-We'll start by ranking the teams of the <code>Eredivisie</code> using the estimated skill parameters from the 2018/2019 season, which are based on the estimation sample of the five seasons 2015/2016-2018/2019. Note that for one of the teams the skill parameter is "anchored at zero". This "anchoring" is done for the very same \"identification\" reason that one of the parameters in a traditional logit analysis is always set to zero by default: the value of a parameter automatically follows if you already know all the other parameters in your model and given the fact that probabilities always sum up to 1 in total.
-
-Consequently, as Rasmus noted before, the skill parameters are difficult to interpret as they are relative to the skill of the team that had its skill parameter "anchored" at zero. To put them on a more interpretable scale the skill paramters are first zero centered by subtracting the mean skill of all teams. Then he added the home baseline and exponentiated the resulting values. These rescaled skill parameters are now on the scale of expected number of goals when playing as a home team.
-
-```{r team_skill, fig.height=8, dpi=90}
-team_skill <- ms3[, str_detect(string=colnames(ms3), paste0("skill\\[",to_year-from_year,","))]
-team_skill <- (team_skill - rowMeans(team_skill)) + ms3[, paste0("home_baseline[",to_year-from_year,"]")]
-team_skill <- exp(team_skill)
-colnames(team_skill) <- teams
-team_skill <- team_skill[,order(colMeans(team_skill), decreasing=T)]
-old_par <- par(mar=c(2,0.7,0.7,0.7), xaxs='i')
-caterplot(team_skill, labels.loc="above", val.lim=c(0.7, 3.8))
-par(old_par)
-```
-
-Two teams are clearly ahead of the rest, Ajax and PSV. Let\'s look at the credible difference between these two teams. Ajax is a better team than PSV with a probabilty of 74%, i.e. the odds in favor of Ajax are 74% / 26% = 3. So, on average, PSV only wins one out of four games that they play against Ajax.
-
-```{r team_skill_PSV_Ajax, fig.height=3, fig.width=7}
-plotPost(team_skill[, "Ajax"] - team_skill[, "PSV Eindhoven"], compVal = 0, xlab = "<- PSV     vs     Ajax ->")
-```
-[Return to table of contents](#index)
-
-## <a name="validation"></a>Model validation
+## <a name="simulation"></a>Generating predictions (in- and out-of-sample)
 
 In the <code>eredivisie</code> data set included in this project, the results of the 18 last games of the 2018/2019 season are missing. Using our model we can now both predict and simulate the outcomes of these 18 games. The R code below calculates a number of measures for each game (both the games with known and unknown outcomes):
 
@@ -291,6 +273,10 @@ m3_pred <- sapply(1:nrow(eredivisie), function(i) {
 })
 m3_pred <- t(m3_pred)
 ```
+
+[Return to table of contents](#index)
+
+## <a name="validation"></a>Model validation
 
 First let\'s compare the distribution of the actual number of goals in the data with the predicted mode, mean and randomized number of goals for all the games (focusing on the number of goals for the home team).  
 
@@ -366,6 +352,32 @@ mean(eredivisie$MatchResult == m3_pred[ , "match_result"], na.rm=T)
 ```
 The model predicts the correct match outcome (i.e. home team wins / a draw / away team wins) 57% of the time. Pretty good!
 
+[Return to table of contents](#index)
+
+# <a name="results"></a>Results
+
+## <a name="ranking"></a>The ranking of the teams
+
+We'll start by ranking the teams of the <code>Eredivisie</code> using the estimated skill parameters from the 2018/2019 season, which are based on the estimation sample of the five seasons 2015/2016-2018/2019. Note that for one of the teams the skill parameter is "anchored at zero". This "anchoring" is done for the very same \"identification\" reason that one of the parameters in a traditional logit analysis is always set to zero by default: the value of a parameter automatically follows if you already know all the other parameters in your model and given the fact that probabilities always sum up to 1 in total.
+
+Consequently, as Rasmus noted before, the skill parameters are difficult to interpret as they are relative to the skill of the team that had its skill parameter "anchored" at zero. To put them on a more interpretable scale the skill paramters are first zero centered by subtracting the mean skill of all teams. Then he added the home baseline and exponentiated the resulting values. These rescaled skill parameters are now on the scale of expected number of goals when playing as a home team.
+
+```{r team_skill, fig.height=8, dpi=90}
+team_skill <- ms3[, str_detect(string=colnames(ms3), paste0("skill\\[",to_year-from_year,","))]
+team_skill <- (team_skill - rowMeans(team_skill)) + ms3[, paste0("home_baseline[",to_year-from_year,"]")]
+team_skill <- exp(team_skill)
+colnames(team_skill) <- teams
+team_skill <- team_skill[,order(colMeans(team_skill), decreasing=T)]
+old_par <- par(mar=c(2,0.7,0.7,0.7), xaxs='i')
+caterplot(team_skill, labels.loc="above", val.lim=c(0.7, 3.8))
+par(old_par)
+```
+
+Two teams are clearly ahead of the rest, Ajax and PSV. Let\'s look at the credible difference between these two teams. Ajax is a better team than PSV with a probabilty of 74%, i.e. the odds in favor of Ajax are 74% / 26% = 3. So, on average, PSV only wins one out of four games that they play against Ajax.
+
+```{r team_skill_PSV_Ajax, fig.height=3, fig.width=7}
+plotPost(team_skill[, "Ajax"] - team_skill[, "PSV Eindhoven"], compVal = 0, xlab = "<- PSV     vs     Ajax ->")
+```
 [Return to table of contents](#index)
 
 ## <a name="prediction"></a>Predicting the future
