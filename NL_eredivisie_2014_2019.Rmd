@@ -79,7 +79,7 @@ col_name <- function(name, ...) {
 We first read the Dutch soccer match data of the 2014/15-2018/19 Dutch Eredivisie seasons from the original csv-files and cache them. The result is a database called `eredivisie`.
 
 ```{r raw_data, cache = TRUE, cache.extra = file.info(list.files(path = "test", pattern = ".csv", full.names = TRUE))}
-from_year <- 2017
+from_year <- 2014
 to_year <- 2019
 source(paste0("functions/Import_Data_Eredivisie.R"))
 ```
@@ -88,26 +88,28 @@ Then the cached `eredivisie` data are cleaned and new variables are created.
 
 ```{r processed_data, cache = TRUE, dependson = "raw_data"}
 eredivisie <- eredivisie %>%
-  mutate(MatchResult = sign(HomeGoals - AwayGoals)) %>% # -1 Away win, 0 Draw, 1 Home win
-  filter(!is.na(MatchResult)) # Creating a data frame d with only the complete match results
+  mutate(MatchResult = sign(HomeGoals - AwayGoals)) # -1 Away win, 0 Draw, 1 Home win
+
+# Creating a data frame d with only the complete match results
+d <- na.omit(eredivisie)
 
 # Lists with the unique names of all teams and all seasons in the database
-teams <- unique(c(eredivisie$HomeTeam, eredivisie$AwayTeam))
-seasons <- unique(eredivisie$Season)
+teams <- unique(c(d$HomeTeam, d$AwayTeam))
+seasons <- unique(d$Season)
 
 # A list for JAGS with the data from d where the strings are coded as integers
-data_list <- list(HomeGoals = eredivisie$HomeGoals, AwayGoals = eredivisie$AwayGoals, 
-                  HomeTeam = as.numeric(factor(eredivisie$HomeTeam, levels=teams)),
-                  AwayTeam = as.numeric(factor(eredivisie$AwayTeam, levels=teams)),
-                  Season = as.numeric(factor(eredivisie$Season, levels=seasons)),
-                  n_teams = length(teams), n_games = nrow(eredivisie), 
+data_list <- list(HomeGoals = d$HomeGoals, AwayGoals = d$AwayGoals, 
+                  HomeTeam = as.numeric(factor(d$HomeTeam, levels=teams)),
+                  AwayTeam = as.numeric(factor(d$AwayTeam, levels=teams)),
+                  Season = as.numeric(factor(d$Season, levels=seasons)),
+                  n_teams = length(teams), n_games = nrow(d), 
                   n_seasons = length(seasons))
 ```
 
 The data set <code>eredivisie</code> contains data from 5 different seasons. In this model we allow for variability in year-to-year team performance. This variablitity in team performance can be demonstrated by the following diagram, which shows that some teams do not even participate in all seasons in the <code>eredivisie</code> data set, as a result of dropping out of the first division:
 
 ```{r participation_by_season, fig.height=5, fig.width=7}
-qplot(Season, HomeTeam, data=eredivisie, ylab="Team", xlab = "Season")
+qplot(Season, HomeTeam, data=d, ylab="Team", xlab = "Season")
 ```
 
 Turning this into a JAGS model results in the following string. Note that the model loops over all seasons and all match results. JAGS parameterizes the normal distribution with precision (the reciprocal of the variance) instead of variance so the hyper priors have to be converted. Finally, we \"anchor\" the skill of one team to a constant otherwise the mean skill can drift away freely. Doing these adjustments results in the following model description:
@@ -246,7 +248,7 @@ par(old_par)
 Two teams are clearly ahead of the rest, Ajax and PSV. Let\'s look at the credible difference between these two teams. Ajax is a better team than PSV with a probabilty of 74%, i.e. the odds in favor of Ajax are 74% / 26% = 3. So, on average, PSV only wins one out of four games that they play against Ajax.
 
 ```{r team_skill_PSV_Ajax, fig.height=3, fig.width=7}
-plotPost(team_skill[, "Ajax"] - team_skill[, "PSV Eindhoven"], compVal = 0, xlab = "← PSV     vs     Ajax →")
+plotPost(team_skill[, "Ajax"] - team_skill[, "PSV Eindhoven"], compVal = 0, xlab = "<- PSV     vs     Ajax ->")
 ```
 [Return to table of contents](#index)
 
@@ -295,7 +297,7 @@ First let\'s compare the distribution of the actual number of goals in the data 
 First the actual distribution of the number of goals for the home teams.
 
 ```{r hist_home_goal, fig.height=3, fig.width=4}
-hist(eredivisie$HomeGoals, breaks= (-1:max(eredivisie$HomeGoals)) + 0.5, xlim=c(-0.5, 10), main = "Distribution of the number of goals\nscored by a home team in a match",
+hist(eredivisie$HomeGoals, breaks= (-1:max(eredivisie$HomeGoals, na.rm=TRUE)) + 0.5, xlim=c(-0.5, 10), main = "Distribution of the number of goals\nscored by a home team in a match",
     xlab = "")
 ```
 
@@ -322,9 +324,6 @@ For most games the expected number of goals are 2. That is, even if your safest 
 The distribution of the mode and the mean number of goals doesn't look remotely like the actual number of goals. This was not to be expected, we would however expect the distribution of randomized goals (where for each match the number of goals has been randomly drawn from that match's predicted home goal distribution) to look similar to the actual number of home goals. Looking at the histogram below, this seems to be the case.
 
 ```{r rand_home_goal, fig.height=3, fig.width=4}
-#hist(m3_pred[ , "rand_home_goal"], xlim=c(-0.5, 10),
-#    main = "Distribution of randomly drawn \n score by a home team in a match",
-#    xlab = "")
 hist(m3_pred[ , "rand_home_goal"], breaks= (-1:max(m3_pred[ , "rand_home_goal"])) + 0.5, xlim=c(-0.5, 10),
     main = "Distribution of randomly drawn \n score by a home team in a match",
     xlab = "")
