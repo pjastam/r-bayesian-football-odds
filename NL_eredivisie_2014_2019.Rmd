@@ -376,7 +376,7 @@ par(old_par)
 Two teams are clearly ahead of the rest, Ajax and PSV. Let\'s look at the credible difference between these two teams. Ajax is a better team than PSV with a probabilty of 74%, i.e. the odds in favor of Ajax are 74% / 26% = 3. So, on average, PSV only wins one out of four games that they play against Ajax.
 
 ```{r team_skill_PSV_Ajax, fig.height=3, fig.width=7}
-plotPost(team_skill[, "Ajax"] - team_skill[, "PSV Eindhoven"], compVal = 0, xlab = "← PSV     vs     Ajax →")
+plotPost(team_skill[, "Ajax"] - team_skill[, "PSV Eindhoven"], compVal = 0, xlab = "<- PSV     vs     Ajax ->")
 ```
 [Return to table of contents](#index)
 
