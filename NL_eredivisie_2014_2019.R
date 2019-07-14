@@ -44,7 +44,7 @@ data_list <- list(HomeGoals = d$HomeGoals, AwayGoals = d$AwayGoals,
 ## ----participation_by_season, fig.height=5, fig.width=7------------------
 qplot(Season, HomeTeam, data=d, ylab="Team", xlab = "Season")
 
-## ----jags_model_description, cache=TRUE, tidy=FALSE----------------------
+## ----jags_model_description, cache=2, tidy=FALSE-------------------------
 m3_string <- "model {
 for(i in 1:n_games) {
 HomeGoals[i] ~ dpois(lambda_home[Season[i], HomeTeam[i],AwayTeam[i]])

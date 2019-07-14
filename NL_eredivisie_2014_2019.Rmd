@@ -165,7 +165,7 @@ qplot(Season, HomeTeam, data=d, ylab="Team", xlab = "Season")
 
 Turning this into a JAGS model results in the following string. Note that the model loops over all seasons and all match results. JAGS parameterizes the normal distribution with precision (the reciprocal of the variance) instead of variance so the hyper priors have to be converted. Finally, we \"anchor\" the skill of one team to a constant otherwise the mean skill can drift away freely. Doing these adjustments results in the following model description:
 
-```{r jags_model_description, cache=TRUE, tidy=FALSE}
+```{r jags_model_description, cache=2, tidy=FALSE}
 m3_string <- "model {
 for(i in 1:n_games) {
 HomeGoals[i] ~ dpois(lambda_home[Season[i], HomeTeam[i],AwayTeam[i]])
