@@ -5,6 +5,13 @@ date: "July 14th, 2019"
 output: html_document
 ---
 
+```{r knitr_setup, include=FALSE, purl=FALSE}
+knitr::opts_chunk$set(message=FALSE, warning=FALSE, fig.width=9,
+                      fig.height=5, dpi=90, fig.path='results/')
+
+knitr::knit_hooks$set(purl = knitr::hook_purl)
+```
+
 > *Copyright 2019 [Piet Stam](http://www.pietstam.nl). The code and the README.md documentation are licensed under the Creative Commons [Attribution 4.0 International license](http://creativecommons.org/licenses/by/4.0/).* 
 
 # <a name="index"></a>Table of contents
@@ -96,10 +103,6 @@ We choose very vague priors. For example, the prior on the baseline have a SD of
 ## <a name="kickoff"></a>Read data
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(message=TRUE, warning=TRUE, fig.width=9,
-                      fig.height=5, dpi=90, fig.path='results/',
-                      purl=FALSE)
-
 library(rjags)
 library(coda)
 library(mcmcplots)
@@ -121,7 +124,7 @@ col_name <- function(name, ...) {
 
 We first read the Dutch soccer match data of the 2014/15-2018/19 Dutch Eredivisie seasons from the original csv-files and cache them. The result is a database called `eredivisie`.
 
-```{r raw_data, cache = TRUE, cache.extra = file.info(list.files(path = "test", pattern = ".csv", full.names = TRUE))}
+```{r raw_data, cache = 2, cache.extra = file.info(list.files(path = "test", pattern = ".csv", full.names = TRUE))}
 from_year <- 2014
 to_year <- 2019
 source(paste0("functions/Import_Data_Eredivisie.R"))
@@ -129,7 +132,7 @@ source(paste0("functions/Import_Data_Eredivisie.R"))
 
 Then the cached `eredivisie` data are cleaned and new variables are created.
 
-```{r processed_data, cache = TRUE, dependson = "raw_data"}
+```{r processed_data, cache = 2, dependson = "raw_data"}
 eredivisie <- eredivisie %>%
   mutate(MatchResult = sign(HomeGoals - AwayGoals)) # -1 Away win, 0 Draw, 1 Home win
 
@@ -207,7 +210,7 @@ season_sigma ~ dunif(0, 3)
 
 We then run this model directly from R using RJAGS and the <code>textConnection</code> function. This takes about half an hour on my computer, but of course this depends on the configuration at hand.
 
-```{r monte_carlo, cache=TRUE, dependson="processed_data", cache.extra = "jags_model_description", results='hide'}
+```{r monte_carlo, cache=2, dependson="processed_data", cache.extra = "jags_model_description", results='hide'}
 # Compiling the model
 m3 <- jags.model(textConnection(m3_string), data=data_list, n.chains=3, n.adapt=10000)
 # Burning some samples on the altar of the MCMC god
@@ -243,7 +246,7 @@ In the <code>eredivisie</code> data set included in this project, the results of
   - The most likely match result for each game.
   - A random sample from the distributions of credible home scores, away scores and match results. This is how the Eredivisie actually could have played out in an alternative reality.
 
-```{r model_predictions, cache=TRUE, dependson="monte_carlo", tidy=FALSE}
+```{r model_predictions, cache=2, dependson="monte_carlo", tidy=FALSE}
 n <- nrow(ms3)
 m3_pred <- sapply(1:nrow(eredivisie), function(i) {
   home_team <- which(teams == eredivisie$HomeTeam[i])
