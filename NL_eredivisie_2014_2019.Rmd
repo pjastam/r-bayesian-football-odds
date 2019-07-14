@@ -36,7 +36,6 @@ knitr::knit_hooks$set(purl = knitr::hook_purl)
      - [Betting on the correct score](#scorebetting)
      
   5. [Appendix](#appendix)
-     - [Markdown instructions](#instructions)
      - [Who do you call?](#contact)
 
 # <a name="intro"></a>Introduction
@@ -512,14 +511,6 @@ The most likely result is 1 - 1 with a predicted payout of 9.70, which can be co
 [Return to table of contents](#index)
 
 # <a name="appendix"></a>Appendix
-
-## <a name="instructions"></a>Markdown instructions
-
-If you want to preview this R Markdown (Rmd) file (without the results), then click the "Preview" button in RStudio aftering having changed the fifth line of code to: <code>output: html_notebook</code>
-
-If you want to convert this R Markdown (Rmd) file to an R script, then execute the following line of code in your RStudio console: <code>knitr::purl("NL_eredivisie_2014_2019.Rmd", "NL_eredivisie_2014_2019.R", documentation = 0)</code>
-
-[Return to table of contents](#index)
 
 ## <a name="contact"></a>Who do you call?
 
