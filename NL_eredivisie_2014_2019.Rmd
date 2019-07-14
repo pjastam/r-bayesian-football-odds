@@ -1,8 +1,8 @@
 ---
 title: "Bayesian estimation of a Poisson model for Dutch football matches odds"
 author: "Piet Stam"
-date: "May 10th, 2019"
-output: html_notebook
+date: "July 14th, 2019"
+output: html_document
 ---
 
 > *Copyright 2019 [Piet Stam](http://www.pietstam.nl). The code and the README.md documentation are licensed under the Creative Commons [Attribution 4.0 International license](http://creativecommons.org/licenses/by/4.0/).* 
@@ -14,17 +14,21 @@ output: html_notebook
      - [Acknowledgements](#acknowledgements)
      
   2. [Data and methods](#datamethods)
-     - [Read data](#kickoff)
      - [Theoretical description of the model](#maths)
+     - [Read data](#kickoff)
+     
+  3. [Model estimation, simulation and validation](#est_sim_val)
+     - [Model estimation](#estimation)
+     - [Generating the predictions](#simulation)
      - [Model validation](#validation)
      
-  3. [Results](#results)
+  4. [Results](#results)
      - [The ranking of the teams](#ranking)
      - [Predicting the future](#prediction)
      - [Betting on the match outcome](#matchbetting)
      - [Betting on the correct score](#scorebetting)
      
-  4. [Appendix](#appendix)
+  5. [Appendix](#appendix)
      - [Markdown instructions](#instructions)
      - [Who do you call?](#contact)
 
@@ -48,37 +52,91 @@ You can find my code at [GitHub](https://github.com/pjastam/r-bayesian-football-
 
 # <a name="datamethods"></a>Data and methods
 
+## <a name="maths"></a>Theoretical description of the model
+
+The first thing to notice is that not all teams are equally good. Therefore, it will be assumed that all teams have a latent skill variable and the skill of a team *minus* the skill of the opposing team defines the predicted outcome of a game. As the number of goals are assumed to be Poisson distributed it is natural that the skills of the teams are on the log scale of the mean of the distribution.
+
+In its simplest form, the distribution of the number of goals for team $i$ when facing team $j$ is then
+
+$$Goals_{i,j} \sim \text{Poisson}(\lambda_{i,j})$$
+
+$$\log(\lambda_{i,j}) = \text{baseline} + \text{skill}_i - \text{skill}_j$$
+
+where baseline is the log average number of goals when both teams are equally good. Note that this model description does not capture the variation in the number of goals among football seasons and between home vs away teams.
+
+If we do allow for the latter type of variation, then the distribution of the goal outcome of a match between home team $i$ and away team $j$ in season $t$ can be described as follows: 
+
+$$HomeGoals_{t,i,j} \sim \text{Poison}(\lambda_{\text{home},t,i,j})$$
+$$AwayGoals_{t,i,j} \sim \text{Poison}(\lambda_{\text{away},t,i,j})$$
+$$\log(\lambda_{\text{home},t,i,j}) = \text{baseline}_{\text{home},t} + \text{skill}_{t,i} - \text{skill}_{t,j}$$
+$$\log(\lambda_{\text{away},t,i,j}) = \text{baseline}_{\text{away},t} + \text{skill}_{t,j} - \text{skill}_{t,i}$$
+
+Note that the <code>baseline</code> is split into <code>home_baseline</code> and <code>away_baseline</code> in order to account for the home advantage. 
+
+I set the prior distributions over the baseline and the skill of all $n$ teams in season $t$ to:
+
+$$\text{baseline}_{\text{home},t} \sim \text{Normal}(0, 4^2)$$
+$$\text{baseline}_{\text{away},t} \sim \text{Normal}(0, 4^2)$$
+
+I set the prior distributions over the skill of all $n$ teams in season $t$ to:
+
+$$\text{skill}_{t,1 \ldots n} \sim \text{Normal}(\text{skill}_{t-1,1 \ldots n}, \sigma_{\text{seasons}}^2)$$
+$$\sigma_\text{seasons} \sim \text{Uniform}(0, 3)$$
+
+and the priors over the skill of all $n$ teams in their $first$ season modeled as:
+
+$$\text{skill}_{1,1 \ldots n} \sim \text{Normal}(\mu_\text{teams}, \sigma_{\text{teams}}^2)$$
+$$\mu_\text{teams} \sim \text{Normal}(0, 4^2)$$
+$$\sigma_\text{teams} \sim \text{Uniform}(0, 3)$$
+
+We choose very vague priors. For example, the prior on the baseline have a SD of 4 but since this is on the log scale of the mean number of goals it corresponds to one SD from the mean $0$ covering the range of $[0.02, 54.6]$ goals. A very wide prior indeed.
+
+[Return to table of contents](#index)
+
 ## <a name="kickoff"></a>Read data
 
-```{r include=FALSE}
-knitr::opts_chunk$set(cache=TRUE, message=FALSE, warning=FALSE, fig.width=9,
-                      fig.height=5, dpi=90,fig.path='results/',
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(message=TRUE, warning=TRUE, fig.width=9,
+                      fig.height=5, dpi=90, fig.path='results/',
                       purl=FALSE)
-```
 
-We first read the Dutch soccer match data of the 2014/15-2018/19 Dutch Eredivisie seasons from our RData file called `eredivisie`. If you would like to create this file yourself for some reason, you can do that with the Read_N120142019.R script in the subdirectory `functions`.
-
-```{r cache=FALSE}
 library(rjags)
 library(coda)
 library(mcmcplots)
 library(stringr)
 library(plyr)
+library(dplyr)
 library(xtable)
 library(ggplot2)
 
 source("functions/plotPost.R")
-source("functions/Read_N20142019.R")
-load(file="results/eredivisie.RData")
 
 set.seed(12345)
 
-# -1 Away win, 0 Draw, 1 Home win
-eredivisie$MatchResult <- sign(eredivisie$HomeGoals - eredivisie$AwayGoals) 
+# Convenience function to generate the type of column names Jags outputs.
+col_name <- function(name, ...) {
+  paste0(name, "[", paste(..., sep=",") , "]")
+}
+```
+
+We first read the Dutch soccer match data of the 2014/15-2018/19 Dutch Eredivisie seasons from the original csv-files and cache them. The result is a database called `eredivisie`.
+
+```{r raw_data, cache = TRUE, cache.extra = file.info(list.files(path = "test", pattern = ".csv", full.names = TRUE))}
+from_year <- 2014
+to_year <- 2019
+source(paste0("functions/Import_Data_Eredivisie.R"))
+```
+
+Then the cached `eredivisie` data are cleaned and new variables are created.
+
+```{r processed_data, cache = TRUE, dependson = "raw_data"}
+eredivisie <- eredivisie %>%
+  mutate(MatchResult = sign(HomeGoals - AwayGoals)) # -1 Away win, 0 Draw, 1 Home win
 
 # Creating a data frame d with only the complete match results
 d <- na.omit(eredivisie)
 
+# Lists with the unique names of all teams and all seasons in the database
 teams <- unique(c(d$HomeTeam, d$AwayTeam))
 seasons <- unique(d$Season)
 
@@ -89,22 +147,23 @@ data_list <- list(HomeGoals = d$HomeGoals, AwayGoals = d$AwayGoals,
                   Season = as.numeric(factor(d$Season, levels=seasons)),
                   n_teams = length(teams), n_games = nrow(d), 
                   n_seasons = length(seasons))
-
-# Convenience function to generate the type of column names Jags outputs.
-col_name <- function(name, ...) {
-  paste0(name, "[", paste(..., sep=",") , "]")
-}
 ```
 
 The data set <code>eredivisie</code> contains data from 5 different seasons. In this model we allow for variability in year-to-year team performance. This variablitity in team performance can be demonstrated by the following diagram, which shows that some teams do not even participate in all seasons in the <code>eredivisie</code> data set, as a result of dropping out of the first division:
 
-```{r fig.height=5, fig.width=7}
+```{r participation_by_season, fig.height=5, fig.width=7}
 qplot(Season, HomeTeam, data=d, ylab="Team", xlab = "Season")
 ```
 
+[Return to table of contents](#index)
+
+# <a name="est_sim_val"></a>Estimation, simulation and validation
+
+## <a name="estimation"></a>Model estimation
+
 Turning this into a JAGS model results in the following string. Note that the model loops over all seasons and all match results. JAGS parameterizes the normal distribution with precision (the reciprocal of the variance) instead of variance so the hyper priors have to be converted. Finally, we \"anchor\" the skill of one team to a constant otherwise the mean skill can drift away freely. Doing these adjustments results in the following model description:
 
-```{r tidy=FALSE}
+```{r jags_model_description, cache=TRUE, tidy=FALSE}
 m3_string <- "model {
 for(i in 1:n_games) {
 HomeGoals[i] ~ dpois(lambda_home[Season[i], HomeTeam[i],AwayTeam[i]])
@@ -148,7 +207,7 @@ season_sigma ~ dunif(0, 3)
 
 We then run this model directly from R using RJAGS and the <code>textConnection</code> function. This takes about half an hour on my computer, but of course this depends on the configuration at hand.
 
-```{r results='hide'}
+```{r monte_carlo, cache=TRUE, dependson="processed_data", cache.extra = "jags_model_description", results='hide'}
 # Compiling the model
 m3 <- jags.model(textConnection(m3_string), data=data_list, n.chains=3, n.adapt=10000)
 # Burning some samples on the altar of the MCMC god
@@ -161,7 +220,7 @@ ms3 <- as.matrix(s3)
 
 The following graphs shows the trace plots and probability distributions of the team mean, team sigma and season sigma parameters, respectively.
 
-```{r fig.height=3}
+```{r mu_sigma_params, fig.height=3}
 plot(s3[, "group_skill"])
 plot(s3[, "group_sigma"])
 plot(s3[, "season_sigma"])
@@ -169,87 +228,13 @@ plot(s3[, "season_sigma"])
 
 We can also calculate the default home advantage by looking at the difference between <code>exp(home_baseline) - exp(away_baseline)</code>. The next graph shows that there is a home advantage of more than 0.4 goals, on average, and it differs significantly from zero.
 
-```{r}
-plotPost(exp(ms3[,col_name("home_baseline",5)]) - exp(ms3[,col_name("away_baseline",5)]), compVal = 0, xlab = "Home advantage in number of goals")
+```{r overall_home_advantage}
+plotPost(exp(ms3[,col_name("home_baseline",to_year-from_year)]) - exp(ms3[,col_name("away_baseline",to_year-from_year)]), compVal = 0, xlab = "Home advantage in number of goals")
 ```
 
 [Return to table of contents](#index)
 
-## <a name="maths"></a>Theoretical description of the model
-
-The first thing to notice is that not all teams are equally good. Therefore, it will be assumed that all teams have a latent skill variable and the skill of a team *minus* the skill of the opposing team defines the predicted outcome of a game. As the number of goals are assumed to be Poisson distributed it is natural that the skills of the teams are on the log scale of the mean of the distribution.
-
-In its simplest form, the distribution of the number of goals for team $i$ when facing team $j$ is then
-
-<script type="math/tex; mode=display">Goals_{i,j} \sim \text{Poisson}(\lambda_{i,j})</script>
-
-<script type="math/tex; mode=display">\log(\lambda_{i,j}) = \text{baseline} + \text{skill}_i - \text{skill}_j</script>
-
-where baseline is the log average number of goals when both teams are equally good. Note that this model description does not capture the variation in the number of goals among football seasons and between home vs away teams.
-
-If we do allow for the latter type of variation, then the distribution of the goal outcome of a match between home team $i$ and away team $j$ in season $t$ can be described as follows: 
-
-<script type="math/tex; mode=display">HomeGoals_{t,i,j} \sim \text{Poison}(\lambda_{\text{home},t,i,j})</script>
-
-<script type="math/tex; mode=display">AwayGoals_{t,i,j} \sim \text{Poison}(\lambda_{\text{away},t,i,j})</script>
-
-<script type="math/tex; mode=display">\log(\lambda_{\text{home},t,i,j}) = \text{baseline}_{\text{home},t} + \text{skill}_{t,i} - \text{skill}_{t,j}</script>
-
-<script type="math/tex; mode=display">\log(\lambda_{\text{away},t,i,j}) = \text{baseline}_{\text{away},t} + \text{skill}_{t,j} - \text{skill}_{t,i}</script>
-
-Note that the <code>baseline</code> is split into <code>home_baseline</code> and <code>away_baseline</code> in order to account for the home advantage. 
-
-I set the prior distributions over the baseline and the skill of all $n$ teams in season $t$ to:
-
-<script type="math/tex; mode=display">\text{baseline}_{\text{home},t} \sim \text{Normal}(0, 4^2)</script>
-
-<script type="math/tex; mode=display">\text{baseline}_{\text{away},t} \sim \text{Normal}(0, 4^2)</script>
-
-I set the prior distributions over the skill of all $n$ teams in season $t$ to:
-
-<script type="math/tex; mode=display">\text{skill}_{t,1 \ldots n} \sim \text{Normal}(\text{skill}_{t-1,1 \ldots n}, \sigma_{\text{seasons}}^2)</script>
-
-<script type="math/tex; mode=display">\sigma_\text{seasons} \sim \text{Uniform}(0, 3)</script>
-
-and the priors over the skill of all $n$ teams in their $first$ season modeled as:
-
-<script type="math/tex; mode=display">\text{skill}_{1,1 \ldots n} \sim \text{Normal}(\mu_\text{teams}, \sigma_{\text{teams}}^2)</script>
-
-<script type="math/tex; mode=display">\mu_\text{teams} \sim \text{Normal}(0, 4^2)</script>
-
-<script type="math/tex; mode=display">\sigma_\text{teams} \sim \text{Uniform}(0, 3)</script>
-
-We choose very vague priors. For example, the prior on the baseline have a SD of 4 but since this is on the log scale of the mean number of goals it corresponds to one SD from the mean $0$ covering the range of $[0.02, 54.6]$ goals. A very wide prior indeed.
-
-[Return to table of contents](#index)
-
-# <a name="results"></a>Results
-
-## <a name="ranking"></a>The ranking of the teams
-
-We'll start by ranking the teams of the <code>Eredivisie</code> using the estimated skill parameters from the 2018/2019 season, which are based on the estimation sample of the five seasons 2015/2016-2018/2019. Note that for one of the teams the skill parameter is "anchored at zero". This "anchoring" is done for the very same \"identification\" reason that one of the parameters in a traditional logit analysis is always set to zero by default: the value of a parameter automatically follows if you already know all the other parameters in your model and given the fact that probabilities always sum up to 1 in total.
-
-Consequently, as Rasmus noted before, the skill parameters are difficult to interpret as they are relative to the skill of the team that had its skill parameter "anchored" at zero. To put them on a more interpretable scale the skill paramters are first zero centered by subtracting the mean skill of all teams. Then he added the home baseline and exponentiated the resulting values. These rescaled skill parameters are now on the scale of expected number of goals when playing as a home team.
-
-```{r fig.height=8, dpi=90}
-team_skill <- ms3[, str_detect(string=colnames(ms3), "skill\\[5,")]
-team_skill <- (team_skill - rowMeans(team_skill)) + ms3[, "home_baseline[5]"]
-team_skill <- exp(team_skill)
-colnames(team_skill) <- teams
-team_skill <- team_skill[,order(colMeans(team_skill), decreasing=T)]
-old_par <- par(mar=c(2,0.7,0.7,0.7), xaxs='i')
-caterplot(team_skill, labels.loc="above", val.lim=c(0.7, 3.8))
-par(old_par)
-```
-
-Two teams are clearly ahead of the rest, Ajax and PSV. Let\'s look at the credible difference between these two teams. Ajax is a better team than PSV with a probabilty of 74%, i.e. the odds in favor of Ajax are 74% / 26% = 3. So, on average, PSV only wins one out of four games that they play against Ajax.
-
-```{r fig.height=3, fig.width=7, results='hide'}
-plotPost(team_skill[, "Ajax"] - team_skill[, "PSV Eindhoven"], compVal = 0, xlab = "← PSV     vs     Ajax →")
-```
-[Return to table of contents](#index)
-
-## <a name="validation"></a>Model validation
+## <a name="simulation"></a>Generating predictions (in- and out-of-sample)
 
 In the <code>eredivisie</code> data set included in this project, the results of the 18 last games of the 2018/2019 season are missing. Using our model we can now both predict and simulate the outcomes of these 18 games. The R code below calculates a number of measures for each game (both the games with known and unknown outcomes):
 
@@ -258,7 +243,7 @@ In the <code>eredivisie</code> data set included in this project, the results of
   - The most likely match result for each game.
   - A random sample from the distributions of credible home scores, away scores and match results. This is how the Eredivisie actually could have played out in an alternative reality.
 
-```{r tidy=FALSE}
+```{r model_predictions, cache=TRUE, dependson="monte_carlo", tidy=FALSE}
 n <- nrow(ms3)
 m3_pred <- sapply(1:nrow(eredivisie), function(i) {
   home_team <- which(teams == eredivisie$HomeTeam[i])
@@ -289,19 +274,23 @@ m3_pred <- sapply(1:nrow(eredivisie), function(i) {
 m3_pred <- t(m3_pred)
 ```
 
+[Return to table of contents](#index)
+
+## <a name="validation"></a>Model validation
+
 First let\'s compare the distribution of the actual number of goals in the data with the predicted mode, mean and randomized number of goals for all the games (focusing on the number of goals for the home team).  
 
 First the actual distribution of the number of goals for the home teams.
 
-```{r fig.height=3, fig.width=4}
-hist(eredivisie$HomeGoals, breaks= (-1:10) + 0.5, xlim=c(-0.5, 10), main = "Distribution of the number of goals\nscored by a home team in a match",
+```{r hist_home_goal, fig.height=3, fig.width=4}
+hist(eredivisie$HomeGoals, breaks= (-1:max(eredivisie$HomeGoals, na.rm=TRUE)) + 0.5, xlim=c(-0.5, 10), main = "Distribution of the number of goals\nscored by a home team in a match",
     xlab = "")
 ```
 
 This next plot shows the distribution of the modes from the predicted distribution of home goals from each game. That is, what is the most probable outcome, for the home team, in each game.
 
-```{r fig.height=3, fig.width=4}
-hist(m3_pred[ , "mode_home_goal"], breaks= (-1:10) + 0.5, xlim=c(-0.5, 10),
+```{r mode_home_goal, fig.height=3, fig.width=4}
+hist(m3_pred[ , "mode_home_goal"], breaks= (-1:max(m3_pred[ , "mode_home_goal"])) + 0.5, xlim=c(-0.5, 10),
     main = "Distribution of predicted most \nprobable score by a home team in\na match",
     xlab = "")
 ```
@@ -310,8 +299,8 @@ For almost all games the single most likely number of goals is one. Actually, if
 
 Let\'s instead look at the distribution of the predicted mean number of home goals in each game.
 
-```{r fig.height=3, fig.width=4}
-hist(m3_pred[ , "mean_home_goal"], breaks= (-1:10) + 0.5, xlim=c(-0.5, 10),
+```{r mean_home_goal, fig.height=3, fig.width=4}
+hist(m3_pred[ , "mean_home_goal"], breaks= (-1:max(m3_pred[ , "mean_home_goal"])) + 0.5, xlim=c(-0.5, 10),
     main = "Distribution of predicted mean \n score by a home team in a match",
     xlab = "")
 ```
@@ -320,31 +309,31 @@ For most games the expected number of goals are 2. That is, even if your safest 
 
 The distribution of the mode and the mean number of goals doesn't look remotely like the actual number of goals. This was not to be expected, we would however expect the distribution of randomized goals (where for each match the number of goals has been randomly drawn from that match's predicted home goal distribution) to look similar to the actual number of home goals. Looking at the histogram below, this seems to be the case.
 
-```{r fig.height=3, fig.width=4}
-hist(m3_pred[ , "rand_home_goal"], breaks= (-1:10) + 0.5, xlim=c(-0.5, 10),
+```{r rand_home_goal, fig.height=3, fig.width=4}
+hist(m3_pred[ , "rand_home_goal"], breaks= (-1:max(m3_pred[ , "rand_home_goal"])) + 0.5, xlim=c(-0.5, 10),
     main = "Distribution of randomly drawn \n score by a home team in a match",
     xlab = "")
 ```
 
 We can also look at how well the model predicts the data. This should probably be done using cross validation, but as the number of effective parameters are much smaller than the number of data points a direct comparison should at least give an estimated prediction accuracy in the right ballpark. 
 
-```{r}
+```{r validation_mode_home_goal}
 mean(eredivisie$HomeGoals == m3_pred[ , "mode_home_goal"], na.rm=T)
 ```
-```{r} 
+```{r validation_mean_home_goal} 
 mean((eredivisie$HomeGoals - m3_pred[ , "mean_home_goal"])^2, na.rm=T)
 ```
 
 So on average the model predicts the correct number of home goals 31% of the time and guesses the average number of goals with a mean squared error of 1.51. Now we'll look at the actual and predicted match outcomes. The graph below shows the match outcomes in the data with 1 being a home win, 0 being a draw and -1 being a win for the away team.
 
-```{r fig.height=3, fig.width=4}
+```{r hist_actual_match_result, fig.height=3, fig.width=4}
 hist(eredivisie$MatchResult, breaks= (-2:1) + 0.5, xlim=c(-1.5, 1.5), ylim=c(0, 1000), main = "Actual match results",
     xlab = "")
 ```
 
 Now looking at the most probable outcomes of the matches according to the model.
 
-```{r fig.height=3, fig.width=4}
+```{r hist_pred_match_result, fig.height=3, fig.width=4}
 hist(m3_pred[ , "match_result"], breaks= (-2:1) + 0.5, xlim=c(-1.5, 1.5), ylim=c(0, 1000), main = "Predicted match results",
     xlab = "")
 ```
@@ -353,16 +342,42 @@ For almost all matches the safest bet is to bet on the home team. While draws ar
 
 As in the case with the number of home goals, the randomized match outcomes have a distribution similar to the actual match outcomes: 
 
-```{r fig.height=3, fig.width=4}
+```{r hist_rand_match_result, fig.height=3, fig.width=4}
 hist(m3_pred[ , "rand_match_result"], breaks= (-2:1) + 0.5, xlim=c(-1.5, 1.5), ylim=c(0, 1000), main = "Randomized match results",
     xlab = "")
 ```
 
-```{r match_result}
+```{r validation_match_result}
 mean(eredivisie$MatchResult == m3_pred[ , "match_result"], na.rm=T)
 ```
 The model predicts the correct match outcome (i.e. home team wins / a draw / away team wins) 57% of the time. Pretty good!
 
+[Return to table of contents](#index)
+
+# <a name="results"></a>Results
+
+## <a name="ranking"></a>The ranking of the teams
+
+We'll start by ranking the teams of the <code>Eredivisie</code> using the estimated skill parameters from the 2018/2019 season, which are based on the estimation sample of the five seasons 2014/2015-2018/2019. Note that for one of the teams the skill parameter is "anchored at zero". This "anchoring" is done for the very same \"identification\" reason that one of the parameters in a traditional logit analysis is always set to zero by default: the value of a parameter automatically follows if you already know all the other parameters in your model and given the fact that probabilities always sum up to 1 in total.
+
+Consequently, as Rasmus noted before, the skill parameters are difficult to interpret as they are relative to the skill of the team that had its skill parameter "anchored" at zero. To put them on a more interpretable scale the skill paramters are first zero centered by subtracting the mean skill of all teams. Then he added the home baseline and exponentiated the resulting values. These rescaled skill parameters are now on the scale of expected number of goals when playing as a home team.
+
+```{r team_skill, fig.height=8, dpi=90}
+team_skill <- ms3[, str_detect(string=colnames(ms3), paste0("skill\\[",to_year-from_year,","))]
+team_skill <- (team_skill - rowMeans(team_skill)) + ms3[, paste0("home_baseline[",to_year-from_year,"]")]
+team_skill <- exp(team_skill)
+colnames(team_skill) <- teams
+team_skill <- team_skill[,order(colMeans(team_skill), decreasing=T)]
+old_par <- par(mar=c(2,0.7,0.7,0.7), xaxs='i')
+caterplot(team_skill, labels.loc="above", val.lim=c(0.7, 3.8))
+par(old_par)
+```
+
+Two teams are clearly ahead of the rest, Ajax and PSV. Let\'s look at the credible difference between these two teams. Ajax is a better team than PSV with a probabilty of 74%, i.e. the odds in favor of Ajax are 74% / 26% = 3. So, on average, PSV only wins one out of four games that they play against Ajax.
+
+```{r team_skill_PSV_Ajax, fig.height=3, fig.width=7}
+plotPost(team_skill[, "Ajax"] - team_skill[, "PSV Eindhoven"], compVal = 0, xlab = "<- PSV     vs     Ajax ->")
+```
 [Return to table of contents](#index)
 
 ## <a name="prediction"></a>Predicting the future
@@ -371,7 +386,7 @@ Now that we've checked that the model reasonably predicts the Eredivisie history
 
 At the time when I executed my version of this model applied to the Dutch Eredivisie competition (2019-05-10), most of the matches in the 2018/2019 season had already been played. Yet two out of 34 competition rounds had to be played (that is, competition rounds 33 and 34). With these two rounds still to go, Ajax and PSV both have 80 points, but Ajax leads the competition as their goal difference is larger (111-30 = 81) than that of PSV (95-24 = 71). The code below displays the predicted mean and mode number of goals for the endgame and the predicted winner of each game.
 
-```{r results='asis'}
+```{r predict_future_matches, results='asis'}
 eredivisie_forecast <- eredivisie[is.na(eredivisie$HomeGoals), c("Season", "Week", "HomeTeam", "AwayTeam")]
 m3_forecast <- m3_pred[is.na(eredivisie$HomeGoals),] 
 eredivisie_forecast$mean_home_goals <- round(m3_forecast[,"mean_home_goal"], 1) 
@@ -387,7 +402,7 @@ print(xtable(eredivisie_forecast, align="cccccccccc"), type="html")
 
 These predictions are perfectly useful if you want to bet on the likely winner of each game. However, they do not reflect how the actual endgame will play out, e.g., there is not a single draw in the <code>predicted_winner</code> column. So at last let\'s look at a *possible* version of the Eredivisie endgame by displaying the simulated match results calculated earlier. 
 
-```{r results='asis'}
+```{r predict_past_matches, results='asis'}
 eredivisie_sim <- eredivisie[is.na(eredivisie$HomeGoals), c("Season", "Week", "HomeTeam", "AwayTeam")]
 eredivisie_sim$home_goals <- m3_forecast[,"rand_home_goal"] 
 eredivisie_sim$away_goals <- m3_forecast[,"rand_away_goal"]
@@ -406,7 +421,7 @@ Now we see a number of games resulting in a draw. We also see that Ajax and FC U
 
 One of the powers with using Bayesian modeling and MCMC sampling is that once you have the MCMC samples of the parameters it is straight forward to calculate any quantity resulting from these estimates while still retaining the uncertainty of the parameter estimates. So let\'s look at the predicted distribution of the number of goals for AZ Alkmaar vs PSV Eindhoven game and see if I can use my model to make some money. I'll start by using the MCMC samples to calculate the distribution of the number of goals for AZ Alkmaar and PSV Eindhoven.
 
-```{r}
+```{r function_plot_goals}
 plot_goals <- function(home_goals, away_goals) { 
   old_par <- par(mar = c(0, 0, 0, 0))
   par(mfrow = c(2, 2), mar=rep(2.2, 4))
@@ -422,11 +437,11 @@ plot_goals <- function(home_goals, away_goals) {
 }
 ```
 
-```{r}
+```{r setup_top2teams_comparison}
 n <- nrow(ms3)
 home_team <- which(teams == "AZ Alkmaar")
 away_team <- which(teams == "PSV Eindhoven")
-season <- which(seasons == "2018/2019")
+season <- which(seasons == paste0(to_year-1,"/",to_year))
 home_skill <- ms3[, col_name("skill", season, home_team)] 
 away_skill <- ms3[, col_name("skill", season, away_team)]
 home_baseline <- ms3[, col_name("home_baseline", season)]
@@ -440,7 +455,7 @@ Looking at summary of these two distributions in the first two graphs below, it 
 
 The fourth graph shows the probability distribution of a PSV win ('away_win'), a draw ('equal') and AZ win ('home_win'). This graph underlines that a PSV win is a likely scenario: it has a probability of more than 50%. The fact that the balance topples in favor of PSV should then be due to the one goal difference that is attributed a great chance according to the third graph. Note, however, that the probability that PSV will *not* turn out as the match winner (i.e. a draw or a loss) is still almost 50%.
 
-```{r fig.height=5}
+```{r plot_goals, fig.height=5}
 old_par <- par(mfrow = c(2, 2), mar=rep(2.2, 4))
 plot_goals(home_goals, away_goals)
 par(old_par)
@@ -448,10 +463,9 @@ par(old_par)
 
 At May 10th, that is just before the start of competition round 33, you got the following payouts (that is, how much would I get back if my bet was successful) for betting on the outcome of this game, after 288 bets being placed on the betting site [William Hill](http://www.williamhill.com/)
 
-```{r}
-##    AZ     Draw     PSV 
-##   3.90    4.00     1.78
-```
+  |  AZ  | Draw | PSV  |
+  |:----:|:----:|-----:|
+  | 3.90 | 4.00 | 1.78 |
 
 Using my simulated distribution of the number of goals I can calculate the predicted payouts of the model. It appears that the payouts of the model are very close to the payouts that William Hill offers.
 
@@ -467,20 +481,17 @@ The most likely result is 1 - 1 with a predicted payout of 9.70, which can be co
 
 It is also possible to bet on the final goal outcome so let\'s calculate what payouts my model predicts for different goal outcomes. The payouts that William Hill reports are
 
-```{r}
-##        | PSV  PSV  PSV  PSV  PSV
-##        |  0    1    2    3    4
-##   -----|------------------------
-##   AZ 0 | 21   12   12   17   29
-##   AZ 1 | 19   7.5  12   12   21
-##   AZ 2 | 23   13   11   17   29
-##   AZ 3 | 41   26   23   29   51
-##   AZ 4 | 81   51   66   126  81
-```
+  |      | PSV 0 |  PSV 1 | PSV 2 | PSV 3 | PSV 4 |
+  |------|:-----:|:------:|:-----:|:-----:|:-----:|
+  | AZ 0 |  21   |   12   |  12   |  17   |  29   |
+  | AZ 1 |  19   |   7.5  |  12   |  12   |  21   |
+  | AZ 2 |  23   |   13   |  11   |  17   |  29   |
+  | AZ 3 |  41   |   26   |  23   |  29   |  51   |
+  | AZ 4 |  81   |   51   |  66   |  126  |  81   |
 
 It follows that the 1 - 1 draw is also the most likely result at Wiliam Hill. Now, we are going to calculate the payouts that our model predicts.
 
-```{r results='asis'}
+```{r payouts, results='asis'}
 goals_payout <- laply(0:6, function(home_goal) {
   laply(0:6, function(away_goal) {
     1 / mean(home_goals == home_goal & away_goals  == away_goal)
