@@ -1,7 +1,7 @@
 ---
 title: "Bayesian estimation of a Poisson model for Dutch football matches odds"
 author: "Piet Stam"
-date: "July 11th, 2019"
+date: "July 14th, 2019"
 output: html_document
 ---
 
@@ -376,7 +376,7 @@ par(old_par)
 Two teams are clearly ahead of the rest, Ajax and PSV. Let\'s look at the credible difference between these two teams. Ajax is a better team than PSV with a probabilty of 74%, i.e. the odds in favor of Ajax are 74% / 26% = 3. So, on average, PSV only wins one out of four games that they play against Ajax.
 
 ```{r team_skill_PSV_Ajax, fig.height=3, fig.width=7}
-plotPost(team_skill[, "Ajax"] - team_skill[, "PSV Eindhoven"], compVal = 0, xlab = "<- PSV     vs     Ajax ->")
+plotPost(team_skill[, "Ajax"] - team_skill[, "PSV Eindhoven"], compVal = 0, xlab = "← PSV     vs     Ajax →")
 ```
 [Return to table of contents](#index)
 
@@ -463,10 +463,9 @@ par(old_par)
 
 At May 10th, that is just before the start of competition round 33, you got the following payouts (that is, how much would I get back if my bet was successful) for betting on the outcome of this game, after 288 bets being placed on the betting site [William Hill](http://www.williamhill.com/)
 
-```{r}
-##    AZ     Draw     PSV 
-##   3.90    4.00     1.78
-```
+  |  AZ  | Draw | PSV  |
+  |:----:|:----:|-----:|
+  | 3.90 | 4.00 | 1.78 |
 
 Using my simulated distribution of the number of goals I can calculate the predicted payouts of the model. It appears that the payouts of the model are very close to the payouts that William Hill offers.
 
@@ -482,16 +481,13 @@ The most likely result is 1 - 1 with a predicted payout of 9.70, which can be co
 
 It is also possible to bet on the final goal outcome so let\'s calculate what payouts my model predicts for different goal outcomes. The payouts that William Hill reports are
 
-```{r}
-##        | PSV  PSV  PSV  PSV  PSV
-##        |  0    1    2    3    4
-##   -----|------------------------
-##   AZ 0 | 21   12   12   17   29
-##   AZ 1 | 19   7.5  12   12   21
-##   AZ 2 | 23   13   11   17   29
-##   AZ 3 | 41   26   23   29   51
-##   AZ 4 | 81   51   66   126  81
-```
+  |      | PSV 0 |  PSV 1 | PSV 2 | PSV 3 | PSV 4 |
+  |------|:-----:|:------:|:-----:|:-----:|:-----:|
+  | AZ 0 |  21   |   12   |  12   |  17   |  29   |
+  | AZ 1 |  19   |   7.5  |  12   |  12   |  21   |
+  | AZ 2 |  23   |   13   |  11   |  17   |  29   |
+  | AZ 3 |  41   |   26   |  23   |  29   |  51   |
+  | AZ 4 |  81   |   51   |  66   |  126  |  81   |
 
 It follows that the 1 - 1 draw is also the most likely result at Wiliam Hill. Now, we are going to calculate the payouts that our model predicts.
 
