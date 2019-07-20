@@ -123,7 +123,7 @@ col_name <- function(name, ...) {
 
 We first read the Dutch soccer match data of the 2014/15-2018/19 Dutch Eredivisie seasons from the original csv-files and cache them. The result is a database called `eredivisie`.
 
-```{r raw_data, cache = 2, cache.extra = file.info(list.files(path = "test", pattern = ".csv", full.names = TRUE))}
+```{r raw_data, cache = 2, cache.extra = file.info(list.files(path = "data", pattern = ".csv", full.names = TRUE))}
 from_year <- 2014
 to_year <- 2019
 source(paste0("functions/Import_Data_Eredivisie.R"))
