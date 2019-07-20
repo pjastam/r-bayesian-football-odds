@@ -1,7 +1,7 @@
 ---
 title: "Bayesian estimation of a Poisson model for Dutch football matches odds"
 author: "Piet Stam"
-date: "July 14th, 2019"
+date: "July 20th, 2019"
 output: html_document
 ---
 
@@ -123,7 +123,10 @@ col_name <- function(name, ...) {
 
 We first read the Dutch soccer match data of the 2014/15-2018/19 Dutch Eredivisie seasons from the original csv-files and cache them. The result is a database called `eredivisie`.
 
-```{r raw_data, cache = 2, cache.extra = file.info(list.files(path = "data", pattern = ".csv", full.names = TRUE))}
+```{r scan_data_dir, cache = TRUE, cache.extra = file.info(list.files(path = "data", pattern = ".csv", full.names = TRUE)), include=FALSE, purl=FALSE}
+```
+
+```{r raw_data, cache = 2, dependson = "scan_data_dir"}
 from_year <- 2014
 to_year <- 2019
 source(paste0("functions/Import_Data_Eredivisie.R"))
