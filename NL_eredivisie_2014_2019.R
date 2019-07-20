@@ -17,7 +17,7 @@ col_name <- function(name, ...) {
   paste0(name, "[", paste(..., sep=",") , "]")
 }
 
-## ----raw_data, cache = 2, cache.extra = file.info(list.files(path = "test", pattern = ".csv", full.names = TRUE))----
+## ----raw_data, cache = 2, dependson = "scan_data_dir"--------------------
 from_year <- 2014
 to_year <- 2019
 source(paste0("functions/Import_Data_Eredivisie.R"))
