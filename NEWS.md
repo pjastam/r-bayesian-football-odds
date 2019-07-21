@@ -1,3 +1,17 @@
+# CHANGES IN r-bayesian-football-odds VERSION 1.2
+
+## NEW FEATURES
+
+- I added a last section to the Rmd file, showing the results of my one-off betting experience with VERSION 1.0.
+
+## BUG FIXES
+
+- The path to the data directory in the `raw_data` chunk was wrongly called "test". We replaced it by "data".
+
+- We found that one record was missing in the N120182019.csv file, because the total amount of records in this file was one less than 306, which is the total number of matches in one football season. We added the missing record of the Zwolle-Groningen match at April 29th, 2019.
+
+- If the contents of the data direcory are changed, it appears that the cache is not updated because `cache=1` or `cache=2` don't work with the `cache.extra` option, see https://github.com/yihui/knitr/issues/994 and https://yihui.name/knitr/demo/cache/#more-granular-cache. This problem is solved by splitting the code chunck into two code chunks, one of which does nothing more that scanning the status of the data directory.
+
 # CHANGES IN r-bayesian-football-odds VERSION 1.1
 
 ## NEW FEATURES
