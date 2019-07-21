@@ -1,7 +1,7 @@
 ---
 title: "Bayesian estimation of a Poisson model for Dutch football matches odds"
 author: "Piet Stam"
-date: "July 20th, 2019"
+date: "July 21st, 2019"
 output: html_document
 ---
 
@@ -34,6 +34,7 @@ knitr::knit_hooks$set(purl = knitr::hook_purl)
      - [Predicting the future](#prediction)
      - [Betting on the match outcome](#matchbetting)
      - [Betting on the correct score](#scorebetting)
+     - [Betting results](#bettingresults)
      
   5. [Appendix](#appendix)
      - [Who do you call?](#contact)
@@ -510,6 +511,28 @@ print(xtable(goals_payout, align="cccccccc"), type="html")
 ```
 
 The most likely result is 1 - 1 with a predicted payout of 9.70, which can be compared to the William Hill payout of 7.50 for this bet. This, we can earn some extra money if we bet on this end score.
+
+[Return to table of contents](#index)
+
+## <a name="bettingresults"></a>Betting results
+
+As the English say: "put your money where your mouth is". So, at the time, I placed a 1 euro bet on three potential outcomes of the AZ-PSV match:
+
+* a 0-0 equalizer
+* a 1-1 equalizer
+* an AZ win over PSV
+
+I uploaded my official betting ticket to GitHub as proof:
+
+![](https://user-images.githubusercontent.com/8238853/61595945-b8fa5580-abfd-11e9-83ea-4933f6bcd9ee.PNG)
+
+As the true outcome of this match was a 1-0 victory of AZ over PSV, the results of my betting adventure are a loss, a loss and a win, respectively. Here you can find the official ticket with my betting results (in reverse order):
+
+![](https://user-images.githubusercontent.com/8238853/61595949-c283bd80-abfd-11e9-8f93-8efb7131be60.PNG)
+
+So, with a 3 euro stake I earned 4.15 euro, which means a profit margin of 1.15 / 3 = 38%.
+
+For those interested, my bets were placed on [the Dutch Lottery website](https://toto.nederlandseloterij.nl/) (disclosure: I do *not* own shares in that company) and I posted about my one-off betting experience [on LinkedIn](https://www.linkedin.com/pulse/de-bal-rond-piet-stam/) (in Dutch) at the time.
 
 [Return to table of contents](#index)
 
