@@ -321,7 +321,7 @@ season_sigma ~ dunif(0, 3)
 
 We then run this model directly from R using RJAGS and the <code>textConnection</code> function. This takes about half an hour on my computer, but of course this depends on the configuration at hand.
 
-```{r monte_carlo, cache=2, dependson="processed_data", cache.extra = "jags_model_description", results='hide'}
+```{r monte_carlo, cache=2, dependson=list("processed_data","jags_model_description"), results='hide'}
 # Compiling the model
 m3 <- jags.model(textConnection(m3_string), data=data_list, n.chains=3, n.adapt=10000)
 # Burning some samples on the altar of the MCMC god
