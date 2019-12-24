@@ -1,7 +1,7 @@
 ---
 title: "Bayesian estimation of a Poisson model for Dutch football matches odds"
 author: "Piet Stam"
-date: "July 21st, 2019"
+date: "December 24th, 2019"
 output: html_document
 ---
 
@@ -61,42 +61,150 @@ You can find my code at [GitHub](https://github.com/pjastam/r-bayesian-football-
 
 ## <a name="maths"></a>Theoretical description of the model
 
+### Basic model
+
 The first thing to notice is that not all teams are equally good. Therefore, it will be assumed that all teams have a latent skill variable and the skill of a team *minus* the skill of the opposing team defines the predicted outcome of a game. As the number of goals are assumed to be Poisson distributed it is natural that the skills of the teams are on the log scale of the mean of the distribution.
 
 In its simplest form, the distribution of the number of goals for team $i$ when facing team $j$ is then
 
-$$Goals_{i,j} \sim \text{Poisson}(\lambda_{i,j})$$
+$$goals_{i,j} \sim \text{Poisson}(\lambda_{i,j})$$
 
 $$\log(\lambda_{i,j}) = \text{baseline} + \text{skill}_i - \text{skill}_j$$
 
-where baseline is the log average number of goals when both teams are equally good. Note that this model description does not capture the variation in the number of goals among football seasons and between home vs away teams.
+where <code>baseline</code> is the log average number of goals when both teams are equally good. Note that this model description does not capture the variation in the number of goals among football seasons and between home vs away teams.
 
-If we do allow for the latter type of variation, then the distribution of the goal outcome of a match between home team $i$ and away team $j$ in season $t$ can be described as follows: 
+### General model
 
-$$HomeGoals_{t,i,j} \sim \text{Poison}(\lambda_{\text{home},t,i,j})$$
-$$AwayGoals_{t,i,j} \sim \text{Poison}(\lambda_{\text{away},t,i,j})$$
-$$\log(\lambda_{\text{home},t,i,j}) = \text{baseline}_{\text{home},t} + \text{skill}_{t,i} - \text{skill}_{t,j}$$
-$$\log(\lambda_{\text{away},t,i,j}) = \text{baseline}_{\text{away},t} + \text{skill}_{t,j} - \text{skill}_{t,i}$$
+In order to allow for variation in the number of goals among football seasons and between home vs away teams, we refine the distribution of the goal outcome of a match between home team $i$ and away team $j$ in season $s$ as follows: 
 
-Note that the <code>baseline</code> is split into <code>home_baseline</code> and <code>away_baseline</code> in order to account for the home advantage. 
+$$goals^\text{home}_{s,i,j} \sim \text{Poison}(\lambda^\text{home}_{s,i,j})$$ 
+$$goals^\text{away}_{s,i,j} \sim \text{Poison}(\lambda^\text{away}_{s,i,j})$$
 
-I set the prior distributions over the baseline and the skill of all $n$ teams in season $t$ to:
+with the <code>lambdas</code> defined as follows 
 
-$$\text{baseline}_{\text{home},t} \sim \text{Normal}(0, 4^2)$$
-$$\text{baseline}_{\text{away},t} \sim \text{Normal}(0, 4^2)$$
+$$\lambda^\text{home}_{s,i,j} = \exp(\text{baseline}^\text{home}_s + \text{skill}_{s,i} - \text{skill}_{s,j})$$
+$$\lambda^\text{away}_{s,i,j} = \exp(\text{baseline}^\text{away}_s + \text{skill}_{s,j} - \text{skill}_{s,i})$$
 
-I set the prior distributions over the skill of all $n$ teams in season $t$ to:
+Note that the <code>baseline</code> is split into <code>home_baseline</code> and <code>away_baseline</code> in order to account for the home advantage. Furthermore, we introduced the index t for the baseline and skill parameters to allow for variation among seasons.
 
-$$\text{skill}_{t,1 \ldots n} \sim \text{Normal}(\text{skill}_{t-1,1 \ldots n}, \sigma_{\text{seasons}}^2)$$
+#### Defining the baseline distributions
+
+I set the prior distributions of the baselines in season $s$ to:
+
+$$\text{baseline}^\text{home}_s \sim \text{Normal}(\text{baseline}^\text{home}_{s-1}, \sigma_{\text{seasons}}^2)$$
+$$\text{baseline}^\text{away}_s \sim \text{Normal}(\text{baseline}^\text{away}_{s-1}, \sigma_{\text{seasons}}^2)$$
+
+and in the *first* season to:
+
+$$\text{baseline}^\text{home}_1 \sim \text{Normal}(0, 4^2)$$
+
+$$\text{baseline}^\text{away}_1 \sim \text{Normal}(0, 4^2)$$
+
+with <code>sigma-seasons</code> defined as:
+
 $$\sigma_\text{seasons} \sim \text{Uniform}(0, 3)$$
 
-and the priors over the skill of all $n$ teams in their $first$ season modeled as:
+#### Defining the team skill distributions
 
-$$\text{skill}_{1,1 \ldots n} \sim \text{Normal}(\mu_\text{teams}, \sigma_{\text{teams}}^2)$$
+I set the prior distributions over the skills of team $i$ (or $j$, denoted as i|j) in season $s$ to:
+
+$$\text{skill}_{s,i|j} \sim \text{Normal}(\text{skill}_{s-1,i|j}, \sigma_{\text{seasons}}^2)$$
+
+and in the *first* season to:
+
+$$\text{skill}_{1,i|j} \sim \text{Normal}(\mu_\text{teams}, \sigma_{\text{teams}}^2)$$
+
+with the <code>sigma-seasons</code> defined as above and <code>mu-teams</code> and <code>sigma-teams</code> defined as:
+
 $$\mu_\text{teams} \sim \text{Normal}(0, 4^2)$$
 $$\sigma_\text{teams} \sim \text{Uniform}(0, 3)$$
+We apply a normalizing restriction with respect to the (arbitrarily chosen) *first* team in each season $s$ as follows
+
+$$\text{skill}_{s,1} = 0$$
 
 We choose very vague priors. For example, the prior on the baseline have a SD of 4 but since this is on the log scale of the mean number of goals it corresponds to one SD from the mean $0$ covering the range of $[0.02, 54.6]$ goals. A very wide prior indeed.
+
+### Probabilistic Graphical Model
+
+We graphed the dependencies described above with the help of a probabilistic graphical model. To this end, we make use of the CRAN package [DiagrammeR](https://cran.r-project.org/web/packages/DiagrammeR/index.html) with the help of which you can use the [Graph Visualization Software](https://graphviz.gitlab.io/).
+
+```{r, echo=FALSE, warning=FALSE, purl=FALSE}
+library(DiagrammeR)
+
+grViz("
+digraph G {
+  rankdir=LR
+  bgcolor=grey
+  
+  labelloc='b'
+  labeljust='r'
+
+  node [shape=rectangle]
+
+  a [label='N(0,4^2)', color=none, fontcolor=white]
+  b [label='N(0,4^2)', color=none, fontcolor=white]
+  c [label='mu_teams', shape=ellipse, color=none, fontcolor=black]
+  d [label='sigma_teams', shape=ellipse, color=none, fontcolor=black]
+  e [label='sigma_seasons', shape=ellipse, color=none, fontcolor=black]
+  
+  a -> q [color=white]
+  b -> r [color=white]
+
+  c -> t [color=white]
+  d -> t [color=white]
+
+  e -> h [color=white]
+  e -> s [color=white]
+  
+  e -> f [color=white]
+  e -> g [color=white]
+  e -> o [color=white]
+  e -> p [color=white]
+  
+  l [label='U(0,3)', color=none, fontcolor=white]
+  m [label='N(0,4^2)', color=none, fontcolor=white]
+  n [label='U(0,3)', color=none, fontcolor=white]
+  
+  l -> e [color=white]
+  m -> c [color=white]
+  n -> d [color=white]
+  
+  subgraph cluster_seasons {
+    label='Season s &isin; {1,...,S}'
+
+    q [label='baseline_home 1', color=none, fontcolor=black, style=filled, fillcolor=none]
+    r [label='baseline_away 1', color=none, fontcolor=black, style=filled, fillcolor=none]
+    o [label='baseline_home s-1', color=none, fontcolor=black, style=filled, fillcolor=none]
+    p [label='baseline_away s-1', color=none, fontcolor=black, style=filled, fillcolor=none]
+    f [label='baseline_home s', color=none, fontcolor=black, style=filled, fillcolor=none]
+    g [label='baseline_away s', color=none, fontcolor=black, style=filled, fillcolor=none]
+  
+    q -> o [color=white]
+    r -> p [color=white]
+    o -> f [color=white]
+    p -> g [color=white]
+  
+    f -> j [color=white]
+    g -> k [color=white]
+  
+    subgraph cluster_teams {
+      label='Team i,j &isin; {1,...,T | i < > j}'
+
+      h [label='skill s,i|j', color=none, fontcolor=black, style=filled, fillcolor=none]
+      s [label='skill s-1,i|j', color=none, fontcolor=black, style=filled, fillcolor=none]
+      t [label='skill 1,i|j', color=none, fontcolor=black, style=filled, fillcolor=none]
+      j [label='goals_home s,i,j', color=none, fontcolor=black, style=filled, fillcolor=none]
+      k [label='goals_away s,i,j', color=none, fontcolor=black, style=filled, fillcolor=none]
+  
+      t -> s [color=white]
+      s -> h [color=white]
+      h -> j [color=white]
+      h -> k [color=white]
+    }
+  }
+}
+")
+```
 
 [Return to table of contents](#index)
 
