@@ -1,7 +1,7 @@
 ---
 title: "Bayesian estimation of a Poisson model for Dutch football matches odds"
 author: "Piet Stam"
-date: "December 24th, 2019"
+date: "August 14th, 2020"
 output: html_document
 ---
 
@@ -211,7 +211,7 @@ digraph G {
 ## <a name="kickoff"></a>Read data
 
 ```{r setup, include=FALSE}
-library(rjags)
+library(runjags)
 library(coda)
 library(mcmcplots)
 library(stringr)
@@ -323,11 +323,19 @@ We then run this model directly from R using RJAGS and the <code>textConnection<
 
 ```{r monte_carlo, cache=2, dependson=list("processed_data","jags_model_description"), results='hide'}
 # Compiling the model
-m3 <- jags.model(textConnection(m3_string), data=data_list, n.chains=3, n.adapt=10000)
-# Burning some samples on the altar of the MCMC god
-update(m3, 10000)
+m3 <- run.jags(method="parallel",
+               model=m3_string,
+               monitor=c("home_baseline", "away_baseline","skill", "season_sigma", "group_sigma", "group_skill"),
+               data=data_list,
+               n.chains=3,
+               adapt=10000,
+               burnin=10000,
+               sample=15000,
+               thin=8,
+               summarise=FALSE,
+               plots=FALSE)
 # Generating MCMC samples
-s3 <- coda.samples(m3, variable.names=c("home_baseline", "away_baseline","skill", "season_sigma", "group_sigma", "group_skill"), n.iter=40000, thin=8)
+s3 <- as.mcmc.list(m3)
 # Merging the three MCMC chains into one matrix
 ms3 <- as.matrix(s3)
 ```
