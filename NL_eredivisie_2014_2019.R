@@ -19,7 +19,7 @@ col_name <- function(name, ...) {
 
 ## ----raw_data, cache = 2, dependson = "scan_data_dir"--------------------
 from_year <- 2014
-to_year <- 2019
+to_year <- 2020
 source(paste0("functions/Import_Data_Eredivisie.R"))
 
 ## ----processed_data, cache = 2, dependson = "raw_data"-------------------
