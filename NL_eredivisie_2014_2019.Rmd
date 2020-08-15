@@ -2,7 +2,10 @@
 title: "Bayesian estimation of a Poisson model for Dutch football matches odds"
 author: "Piet Stam"
 date: "August 15th, 2020"
-output: github_document
+output: 
+  github_document:
+    toc: true
+    toc_depth: 4
 ---
 
 ```{r knitr_setup, include=FALSE, purl=FALSE}
@@ -12,41 +15,16 @@ knitr::opts_chunk$set(message=FALSE, warning=FALSE, fig.width=9,
 knitr::knit_hooks$set(purl = knitr::hook_purl)
 ```
 
-> *Copyright 2019 [Piet Stam](http://www.pietstam.nl). The code and the README.md documentation are licensed under the Creative Commons [Attribution 4.0 International license](http://creativecommons.org/licenses/by/4.0/).* 
+> *Copyright 2019 [Piet Stam](http://www.pietstam.nl). The code and the documentation are licensed under the Creative Commons [Attribution 4.0 International license](http://creativecommons.org/licenses/by/4.0/).* 
 
-# <a name="index"></a>Table of contents
+## Introduction
 
-  1. [Introduction](#intro)
-     - [Quick summary](#goal)
-     - [Acknowledgements](#acknowledgements)
-     
-  2. [Data and methods](#datamethods)
-     - [Theoretical description of the model](#maths)
-     - [Read data](#kickoff)
-     
-  3. [Model estimation, simulation and validation](#est_sim_val)
-     - [Model estimation](#estimation)
-     - [Generating the predictions](#simulation)
-     - [Model validation](#validation)
-     
-  4. [Results](#results)
-     - [The ranking of the teams](#ranking)
-     - [Predicting the future](#prediction)
-     - [Betting on the match outcome](#matchbetting)
-     - [Betting on the correct score](#scorebetting)
-     - [Betting results](#bettingresults)
-     
-  5. [Appendix](#appendix)
-     - [Who do you call?](#contact)
-
-# <a name="intro"></a>Introduction
-
-## <a name="goal"></a>Quick summary
+### Quick summary
 We applied the original work of [Rasmus Baath](http://www.sumsar.net/about.html) to the Dutch Eredivisie football competition. With `r-bayesian-football-odds` we estimated the odds of football matches in the last two weeks of the 2018/2019 Dutch Eredivisie football competiton. We provide the code and evaluate the results of our predictions. 
 
 [Return to table of contents](#index)
 
-## <a name="acknowledgements"></a>Acknowledgements
+### Acknowledgements
 This piece of work is based on the works of [Rasmus Baath](http://www.sumsar.net/blog/2013/07/modeling-match-results-in-la-liga-part-one/). Rasmus Baath submitted his code to the [UseR 2013 data analysis contest](https://www.r-project.org/conferences/useR-2013/) and licensed it under the Creative Commons [Attribution 3.0 Unported license](http://creativecommons.org/licenses/by/3.0/). 
 
 He predicted the results of the 50 last matches of the 2012/2013 Spanish LaLiga season. He used data of the 2008/09-2012/13 seasons (5 seasons in total) to estimate his regression model in a [Bayesian](https://en.wikipedia.org/wiki/Bayes_estimator) way. See [this thread](https://stats.stackexchange.com/questions/252577/bayes-regression-how-is-it-done-in-comparison-to-standard-regression) for an intuitive explanation of the difference between the bayesian approach and the conventional approaches of linear regression and maximum likelihood.
@@ -57,11 +35,11 @@ You can find my code at [GitHub](https://github.com/pjastam/r-bayesian-football-
 
 [Return to table of contents](#index)
 
-# <a name="datamethods"></a>Data and methods
+## Data and methods
 
-## <a name="maths"></a>Theoretical description of the model
+### Theoretical description of the model
 
-### Basic model
+#### Basic model
 
 The first thing to notice is that not all teams are equally good. Therefore, it will be assumed that all teams have a latent skill variable and the skill of a team *minus* the skill of the opposing team defines the predicted outcome of a game. As the number of goals are assumed to be Poisson distributed it is natural that the skills of the teams are on the log scale of the mean of the distribution.
 
@@ -73,7 +51,7 @@ $$\log(\lambda_{i,j}) = \text{baseline} + \text{skill}_i - \text{skill}_j$$
 
 where <code>baseline</code> is the log average number of goals when both teams are equally good. Note that this model description does not capture the variation in the number of goals among football seasons and between home vs away teams.
 
-### General model
+#### General model
 
 In order to allow for variation in the number of goals among football seasons and between home vs away teams, we refine the distribution of the goal outcome of a match between home team $i$ and away team $j$ in season $s$ as follows: 
 
@@ -87,7 +65,7 @@ $$\lambda^\text{away}_{s,i,j} = \exp(\text{baseline}^\text{away}_s + \text{skill
 
 Note that the <code>baseline</code> is split into <code>home_baseline</code> and <code>away_baseline</code> in order to account for the home advantage. Furthermore, we introduced the index t for the baseline and skill parameters to allow for variation among seasons.
 
-#### Defining the baseline distributions
+##### Defining the baseline distributions
 
 I set the prior distributions of the baselines in season $s$ to:
 
@@ -104,7 +82,7 @@ with <code>sigma-seasons</code> defined as:
 
 $$\sigma_\text{seasons} \sim \text{Uniform}(0, 3)$$
 
-#### Defining the team skill distributions
+##### Defining the team skill distributions
 
 I set the prior distributions over the skills of team $i$ (or $j$, denoted as i|j) in season $s$ to:
 
@@ -124,7 +102,7 @@ $$\text{skill}_{s,1} = 0$$
 
 We choose very vague priors. For example, the prior on the baseline have a SD of 4 but since this is on the log scale of the mean number of goals it corresponds to one SD from the mean $0$ covering the range of $[0.02, 54.6]$ goals. A very wide prior indeed.
 
-### Probabilistic Graphical Model
+#### Probabilistic Graphical Model
 
 We graphed the dependencies described above with the help of a probabilistic graphical model. To this end, we make use of the CRAN package [DiagrammeR](https://cran.r-project.org/web/packages/DiagrammeR/index.html) with the help of which you can use the [Graph Visualization Software](https://graphviz.gitlab.io/).
 
@@ -208,7 +186,7 @@ digraph G {
 
 [Return to table of contents](#index)
 
-## <a name="kickoff"></a>Read data
+### Read data
 
 ```{r setup, include=FALSE}
 library(runjags)
@@ -271,9 +249,9 @@ qplot(Season, HomeTeam, data=d, ylab="Team", xlab = "Season")
 
 [Return to table of contents](#index)
 
-# <a name="est_sim_val"></a>Estimation, simulation and validation
+## Estimation, simulation and validation
 
-## <a name="estimation"></a>Model estimation
+### Model estimation
 
 Turning this into a JAGS model results in the following string. Note that the model loops over all seasons and all match results. JAGS parameterizes the normal distribution with precision (the reciprocal of the variance) instead of variance so the hyper priors have to be converted. Finally, we \"anchor\" the skill of one team to a constant otherwise the mean skill can drift away freely. Doing these adjustments results in the following model description:
 
@@ -327,11 +305,16 @@ m3 <- run.jags(method="parallel",
                model=m3_string,
                monitor=c("home_baseline", "away_baseline","skill", "season_sigma", "group_sigma", "group_skill"),
                data=data_list,
-               n.chains=3,
-               adapt=10000,
-               burnin=10000,
-               sample=15000,
-               thin=8,
+#               n.chains=3,
+#               adapt=10000,
+#               burnin=10000,
+#               sample=15000,
+#               thin=8,
+               n.chains=1,
+               adapt=100,
+               burnin=100,
+               sample=150,
+               thin=1,
                summarise=FALSE,
                plots=FALSE)
 # Generating MCMC samples
@@ -356,7 +339,7 @@ plotPost(exp(ms3[,col_name("home_baseline",to_year-from_year)]) - exp(ms3[,col_n
 
 [Return to table of contents](#index)
 
-## <a name="simulation"></a>Generating predictions (in- and out-of-sample)
+### Generating predictions (in- and out-of-sample)
 
 In the <code>eredivisie</code> data set included in this project, the results of the 18 last games of the 2018/2019 season are missing. Using our model we can now both predict and simulate the outcomes of these 18 games. The R code below calculates a number of measures for each game (both the games with known and unknown outcomes):
 
@@ -398,7 +381,7 @@ m3_pred <- t(m3_pred)
 
 [Return to table of contents](#index)
 
-## <a name="validation"></a>Model validation
+### Model validation
 
 First let\'s compare the distribution of the actual number of goals in the data with the predicted mode, mean and randomized number of goals for all the games (focusing on the number of goals for the home team).  
 
@@ -476,9 +459,11 @@ The model predicts the correct match outcome (i.e. home team wins / a draw / awa
 
 [Return to table of contents](#index)
 
-# <a name="results"></a>Results
+## Results
 
-## <a name="ranking"></a>The ranking of the teams
+Disclaimer: my comments below may be out of sync with the empirical results and graphs, because these comments (as well as the description of my betting experience in the last section) are based on the results of running [VERSION 1.0](https://github.com/pjastam/r-bayesian-football-odds/releases/tag/v1.0) instead of the current version of the app.
+
+### The ranking of the teams
 
 We'll start by ranking the teams of the <code>Eredivisie</code> using the estimated skill parameters from the 2018/2019 season, which are based on the estimation sample of the five seasons 2014/2015-2018/2019. Note that for one of the teams the skill parameter is "anchored at zero". This "anchoring" is done for the very same \"identification\" reason that one of the parameters in a traditional logit analysis is always set to zero by default: the value of a parameter automatically follows if you already know all the other parameters in your model and given the fact that probabilities always sum up to 1 in total.
 
@@ -502,7 +487,7 @@ plotPost(team_skill[, "Ajax"] - team_skill[, "PSV Eindhoven"], compVal = 0, xlab
 ```
 [Return to table of contents](#index)
 
-## <a name="prediction"></a>Predicting the future
+### Predicting the future
 
 Now that we've checked that the model reasonably predicts the Eredivisie history let\'s predict the Eredivisie endgame! 
 
@@ -539,7 +524,7 @@ Now we see a number of games resulting in a draw. We also see that Ajax and FC U
 
 [Return to table of contents](#index)
 
-## <a name="matchbetting"></a>Betting on the match outcome
+### Betting on the match outcome
 
 One of the powers with using Bayesian modeling and MCMC sampling is that once you have the MCMC samples of the parameters it is straight forward to calculate any quantity resulting from these estimates while still retaining the uncertainty of the parameter estimates. So let\'s look at the predicted distribution of the number of goals for AZ Alkmaar vs PSV Eindhoven game and see if I can use my model to make some money. I'll start by using the MCMC samples to calculate the distribution of the number of goals for AZ Alkmaar and PSV Eindhoven.
 
@@ -599,7 +584,7 @@ The most likely result is 1 - 1 with a predicted payout of 9.70, which can be co
 
 [Return to table of contents](#index)
 
-## <a name="scorebetting"></a>Betting on the correct score
+### Betting on the correct score
 
 It is also possible to bet on the final goal outcome so let\'s calculate what payouts my model predicts for different goal outcomes. The payouts that William Hill reports are
 
@@ -630,7 +615,7 @@ The most likely result is 1 - 1 with a predicted payout of 9.70, which can be co
 
 [Return to table of contents](#index)
 
-## <a name="bettingresults"></a>Betting results
+### Betting results
 
 As the English say: "put your money where your mouth is". So, at the time, I placed a 1 euro bet on three potential outcomes of the AZ-PSV match:
 
@@ -652,9 +637,9 @@ For those interested, my bets were placed on [the Dutch Lottery website](https:/
 
 [Return to table of contents](#index)
 
-# <a name="appendix"></a>Appendix
+## Appendix
 
-## <a name="contact"></a>Who do you call?
+### Who do you call?
 
 You can contact me at my GitHub email address if you would like to share your thoughts.
 
