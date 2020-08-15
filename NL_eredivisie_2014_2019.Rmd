@@ -1,8 +1,8 @@
 ---
 title: "Bayesian estimation of a Poisson model for Dutch football matches odds"
 author: "Piet Stam"
-date: "August 14th, 2020"
-output: html_document
+date: "August 15th, 2020"
+output: github_document
 ---
 
 ```{r knitr_setup, include=FALSE, purl=FALSE}
@@ -128,7 +128,7 @@ We choose very vague priors. For example, the prior on the baseline have a SD of
 
 We graphed the dependencies described above with the help of a probabilistic graphical model. To this end, we make use of the CRAN package [DiagrammeR](https://cran.r-project.org/web/packages/DiagrammeR/index.html) with the help of which you can use the [Graph Visualization Software](https://graphviz.gitlab.io/).
 
-```{r, echo=FALSE, warning=FALSE, purl=FALSE}
+```{r pgm, echo=FALSE, warning=FALSE, purl=FALSE}
 library(DiagrammeR)
 
 grViz("
