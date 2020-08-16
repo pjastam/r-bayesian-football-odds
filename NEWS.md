@@ -1,3 +1,19 @@
+# CHANGES IN r-bayesian-football-odds VERSION 1.3
+
+## NEW FEATURES
+
+- We now make use of the `runjags` package to perform parallel computations, i.e. using multiple cores of our machine. 
+
+## BUG FIXES
+
+- We applied the TOC as output option in the YAML header of the R Markdown (.Rmd) file instead of the old fashioned way of using HTML code to diplay a list of contents.
+
+- Easy fix to have the Probability Graph Model (PGM) displayed at GitHub. Until this fix it was not the case.
+
+- We changed the output format of the R Markdown (.Rmd) file from html_document to github_document.
+
+- As a consequence of changing the output format to github_document, we also had to change the code of the math statements. Using a helper function written by Ogan Mancarcı (https://github.com/STAT545-UBC/Discussion/issues/102#issuecomment-142482040), we used inline R code to this end.
+
 # CHANGES IN r-bayesian-football-odds VERSION 1.2
 
 ## NEW FEATURES
