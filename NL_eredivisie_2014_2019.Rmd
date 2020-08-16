@@ -39,15 +39,28 @@ You can find my code at [GitHub](https://github.com/pjastam/r-bayesian-football-
 
 ### Theoretical description of the model
 
+<!-- The source of the folowing function is  [https://github.com/STAT545-UBC/Discussion/issues/102](https://github.com/STAT545-UBC/Discussion/issues/102). -->
+
+```{r, echo=FALSE, warning=FALSE, purl=FALSE}
+latexImg = function(latex){
+
+    link = paste0('http://latex.codecogs.com/gif.latex?',
+           gsub('\\=','%3D',URLencode(latex)))
+
+    link = gsub("(%..)","\\U\\1",link,perl=TRUE)
+    return(paste0('![](',link,')'))
+}
+```
+
 #### Basic model
 
 The first thing to notice is that not all teams are equally good. Therefore, it will be assumed that all teams have a latent skill variable and the skill of a team *minus* the skill of the opposing team defines the predicted outcome of a game. As the number of goals are assumed to be Poisson distributed it is natural that the skills of the teams are on the log scale of the mean of the distribution.
 
 In its simplest form, the distribution of the number of goals for team $i$ when facing team $j$ is then
 
-$$goals_{i,j} \sim \text{Poisson}(\lambda_{i,j})$$
+`r latexImg('{goals}_{i,j} \\sim \\text{Poisson}(\\lambda_{i,j})')`
 
-$$\log(\lambda_{i,j}) = \text{baseline} + \text{skill}_i - \text{skill}_j$$
+`r latexImg('\\text{log}(\\lambda_{i,j}) = \\text{baseline} + \\text{skill}_i - \\text{skill}_j')`
 
 where <code>baseline</code> is the log average number of goals when both teams are equally good. Note that this model description does not capture the variation in the number of goals among football seasons and between home vs away teams.
 
@@ -55,50 +68,53 @@ where <code>baseline</code> is the log average number of goals when both teams a
 
 In order to allow for variation in the number of goals among football seasons and between home vs away teams, we refine the distribution of the goal outcome of a match between home team $i$ and away team $j$ in season $s$ as follows: 
 
-$$goals^\text{home}_{s,i,j} \sim \text{Poison}(\lambda^\text{home}_{s,i,j})$$ 
-$$goals^\text{away}_{s,i,j} \sim \text{Poison}(\lambda^\text{away}_{s,i,j})$$
+`r latexImg('{goals}^\\text{home}_{s,i,j} \\sim \\text{Poisson}(\\lambda^\\text{home}_{s,i,j})')` 
 
 with the <code>lambdas</code> defined as follows 
 
-$$\lambda^\text{home}_{s,i,j} = \exp(\text{baseline}^\text{home}_s + \text{skill}_{s,i} - \text{skill}_{s,j})$$
-$$\lambda^\text{away}_{s,i,j} = \exp(\text{baseline}^\text{away}_s + \text{skill}_{s,j} - \text{skill}_{s,i})$$
+`r latexImg('\\lambda^\\text{home}_{s,i,j} = \\exp(\\text{baseline}^\\text{home}_s + \\text{skill}_{s,i} - \\text{skill}_{s,j})')`
+
+`r latexImg('\\lambda^\\text{away}_{s,i,j} = \\exp(\\text{baseline}^\\text{away}_s + \\text{skill}_{s,j} - \\text{skill}_{s,i})')`
 
 Note that the <code>baseline</code> is split into <code>home_baseline</code> and <code>away_baseline</code> in order to account for the home advantage. Furthermore, we introduced the index t for the baseline and skill parameters to allow for variation among seasons.
 
-##### Defining the baseline distributions
+#### Defining the baseline distributions
 
 I set the prior distributions of the baselines in season $s$ to:
 
-$$\text{baseline}^\text{home}_s \sim \text{Normal}(\text{baseline}^\text{home}_{s-1}, \sigma_{\text{seasons}}^2)$$
-$$\text{baseline}^\text{away}_s \sim \text{Normal}(\text{baseline}^\text{away}_{s-1}, \sigma_{\text{seasons}}^2)$$
+`r latexImg('\\text{baseline}^\\text{home}_s \\sim \\text{Normal}(\\text{baseline}^\\text{home}_{s-1}, \\sigma_{\\text{seasons}}^2)')`
+
+`r latexImg('\\text{baseline}^\\text{away}_s \\sim \\text{Normal}(\\text{baseline}^\\text{away}_{s-1}, \\sigma_{\\text{seasons}}^2)')`
 
 and in the *first* season to:
 
-$$\text{baseline}^\text{home}_1 \sim \text{Normal}(0, 4^2)$$
+`r latexImg('\\text{baseline}^\\text{home}_1 \\sim \\text{Normal}(0, 4^2)')`
 
-$$\text{baseline}^\text{away}_1 \sim \text{Normal}(0, 4^2)$$
+`r latexImg('\\text{baseline}^\\text{away}_1 \\sim \\text{Normal}(0, 4^2)')`
 
 with <code>sigma-seasons</code> defined as:
 
-$$\sigma_\text{seasons} \sim \text{Uniform}(0, 3)$$
+`r latexImg('\\sigma_\\text{seasons} \\sim \\text{Uniform}(0, 3)')`
 
-##### Defining the team skill distributions
+#### Defining the team skill distributions
 
 I set the prior distributions over the skills of team $i$ (or $j$, denoted as i|j) in season $s$ to:
 
-$$\text{skill}_{s,i|j} \sim \text{Normal}(\text{skill}_{s-1,i|j}, \sigma_{\text{seasons}}^2)$$
+`r latexImg('\\text{skill}_{s,i|j} \\sim \\text{Normal}(\\text{skill}_{s-1,i|j}, \\sigma_{\\text{seasons}}^2)')`
 
 and in the *first* season to:
 
-$$\text{skill}_{1,i|j} \sim \text{Normal}(\mu_\text{teams}, \sigma_{\text{teams}}^2)$$
+`r latexImg('\\text{skill}_{1,i|j} \\sim \\text{Normal}(\\mu_\\text{teams}, \\sigma_{\\text{teams}}^2)')`
 
 with the <code>sigma-seasons</code> defined as above and <code>mu-teams</code> and <code>sigma-teams</code> defined as:
 
-$$\mu_\text{teams} \sim \text{Normal}(0, 4^2)$$
-$$\sigma_\text{teams} \sim \text{Uniform}(0, 3)$$
+`r latexImg('\\mu_\\text{teams} \\sim \\text{Normal}(0, 4^2)')`
+
+`r latexImg('\\sigma_\\text{teams} \\sim \\text{Uniform}(0, 3)')`
+
 We apply a normalizing restriction with respect to the (arbitrarily chosen) *first* team in each season $s$ as follows
 
-$$\text{skill}_{s,1} = 0$$
+`r latexImg('\\text{skill}_{s,1} = 0')`
 
 We choose very vague priors. For example, the prior on the baseline have a SD of 4 but since this is on the log scale of the mean number of goals it corresponds to one SD from the mean $0$ covering the range of $[0.02, 54.6]$ goals. A very wide prior indeed.
 
