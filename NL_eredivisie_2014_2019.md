@@ -44,8 +44,6 @@ odds of football matches in the last two weeks of the 2018/2019 Dutch
 Eredivisie football competiton. We provide the code and evaluate the
 results of our predictions.
 
-[Return to table of contents](#index)
-
 ### Acknowledgements
 
 This piece of work is based on the works of [Rasmus
@@ -78,11 +76,11 @@ You can find my code at
 deserves all the credits, I deserve all the blame in case of any errors
 in my application to the Dutch football competition.
 
-[Return to table of contents](#index)
-
 ## Data and methods
 
 ### Theoretical description of the model
+
+<!-- The source of the folowing function is  [https://github.com/STAT545-UBC/Discussion/issues/102](https://github.com/STAT545-UBC/Discussion/issues/102). -->
 
 #### Basic model
 
@@ -96,9 +94,9 @@ teams are on the log scale of the mean of the distribution.
 In its simplest form, the distribution of the number of goals for team
 \(i\) when facing team \(j\) is then
 
-\[goals_{i,j} \sim \text{Poisson}(\lambda_{i,j})\]
+![](http://latex.codecogs.com/gif.latex?%7Bgoals%7D_%7Bi,j%7D%20%5Csim%20%5Ctext%7BPoisson%7D\(%5Clambda_%7Bi,j%7D\))
 
-\[\log(\lambda_{i,j}) = \text{baseline} + \text{skill}_i - \text{skill}_j\]
+![](http://latex.codecogs.com/gif.latex?%5Ctext%7Blog%7D\(%5Clambda_%7Bi,j%7D\)%20%3D%20%5Ctext%7Bbaseline%7D%20+%20%5Ctext%7Bskill%7D_i%20-%20%5Ctext%7Bskill%7D_j)
 
 where <code>baseline</code> is the log average number of goals when both
 teams are equally good. Note that this model description does not
@@ -112,13 +110,13 @@ seasons and between home vs away teams, we refine the distribution of
 the goal outcome of a match between home team \(i\) and away team \(j\)
 in season \(s\) as follows:
 
-\[goals^\text{home}_{s,i,j} \sim \text{Poison}(\lambda^\text{home}_{s,i,j})\]
-\[goals^\text{away}_{s,i,j} \sim \text{Poison}(\lambda^\text{away}_{s,i,j})\]
+![](http://latex.codecogs.com/gif.latex?%7Bgoals%7D%5E%5Ctext%7Bhome%7D_%7Bs,i,j%7D%20%5Csim%20%5Ctext%7BPoisson%7D\(%5Clambda%5E%5Ctext%7Bhome%7D_%7Bs,i,j%7D\))
 
 with the <code>lambdas</code> defined as follows
 
-\[\lambda^\text{home}_{s,i,j} = \exp(\text{baseline}^\text{home}_s + \text{skill}_{s,i} - \text{skill}_{s,j})\]
-\[\lambda^\text{away}_{s,i,j} = \exp(\text{baseline}^\text{away}_s + \text{skill}_{s,j} - \text{skill}_{s,i})\]
+![](http://latex.codecogs.com/gif.latex?%5Clambda%5E%5Ctext%7Bhome%7D_%7Bs,i,j%7D%20%3D%20%5Cexp\(%5Ctext%7Bbaseline%7D%5E%5Ctext%7Bhome%7D_s%20+%20%5Ctext%7Bskill%7D_%7Bs,i%7D%20-%20%5Ctext%7Bskill%7D_%7Bs,j%7D\))
+
+![](http://latex.codecogs.com/gif.latex?%5Clambda%5E%5Ctext%7Baway%7D_%7Bs,i,j%7D%20%3D%20%5Cexp\(%5Ctext%7Bbaseline%7D%5E%5Ctext%7Baway%7D_s%20+%20%5Ctext%7Bskill%7D_%7Bs,j%7D%20-%20%5Ctext%7Bskill%7D_%7Bs,i%7D\))
 
 Note that the <code>baseline</code> is split into
 <code>home\_baseline</code> and <code>away\_baseline</code> in order to
@@ -130,39 +128,42 @@ seasons.
 
 I set the prior distributions of the baselines in season \(s\) to:
 
-\[\text{baseline}^\text{home}_s \sim \text{Normal}(\text{baseline}^\text{home}_{s-1}, \sigma_{\text{seasons}}^2)\]
-\[\text{baseline}^\text{away}_s \sim \text{Normal}(\text{baseline}^\text{away}_{s-1}, \sigma_{\text{seasons}}^2)\]
+![](http://latex.codecogs.com/gif.latex?%5Ctext%7Bbaseline%7D%5E%5Ctext%7Bhome%7D_s%20%5Csim%20%5Ctext%7BNormal%7D\(%5Ctext%7Bbaseline%7D%5E%5Ctext%7Bhome%7D_%7Bs-1%7D,%20%5Csigma_%7B%5Ctext%7Bseasons%7D%7D%5E2\))
+
+![](http://latex.codecogs.com/gif.latex?%5Ctext%7Bbaseline%7D%5E%5Ctext%7Baway%7D_s%20%5Csim%20%5Ctext%7BNormal%7D\(%5Ctext%7Bbaseline%7D%5E%5Ctext%7Baway%7D_%7Bs-1%7D,%20%5Csigma_%7B%5Ctext%7Bseasons%7D%7D%5E2\))
 
 and in the *first* season to:
 
-\[\text{baseline}^\text{home}_1 \sim \text{Normal}(0, 4^2)\]
+![](http://latex.codecogs.com/gif.latex?%5Ctext%7Bbaseline%7D%5E%5Ctext%7Bhome%7D_1%20%5Csim%20%5Ctext%7BNormal%7D\(0,%204%5E2\))
 
-\[\text{baseline}^\text{away}_1 \sim \text{Normal}(0, 4^2)\]
+![](http://latex.codecogs.com/gif.latex?%5Ctext%7Bbaseline%7D%5E%5Ctext%7Baway%7D_1%20%5Csim%20%5Ctext%7BNormal%7D\(0,%204%5E2\))
 
 with <code>sigma-seasons</code> defined as:
 
-\[\sigma_\text{seasons} \sim \text{Uniform}(0, 3)\]
+![](http://latex.codecogs.com/gif.latex?%5Csigma_%5Ctext%7Bseasons%7D%20%5Csim%20%5Ctext%7BUniform%7D\(0,%203\))
 
 ##### Defining the team skill distributions
 
 I set the prior distributions over the skills of team \(i\) (or \(j\),
 denoted as i|j) in season \(s\) to:
 
-\[\text{skill}_{s,i|j} \sim \text{Normal}(\text{skill}_{s-1,i|j}, \sigma_{\text{seasons}}^2)\]
+![](http://latex.codecogs.com/gif.latex?%5Ctext%7Bskill%7D_%7Bs,i%7Cj%7D%20%5Csim%20%5Ctext%7BNormal%7D\(%5Ctext%7Bskill%7D_%7Bs-1,i%7Cj%7D,%20%5Csigma_%7B%5Ctext%7Bseasons%7D%7D%5E2\))
 
 and in the *first* season to:
 
-\[\text{skill}_{1,i|j} \sim \text{Normal}(\mu_\text{teams}, \sigma_{\text{teams}}^2)\]
+![](http://latex.codecogs.com/gif.latex?%5Ctext%7Bskill%7D_%7B1,i%7Cj%7D%20%5Csim%20%5Ctext%7BNormal%7D\(%5Cmu_%5Ctext%7Bteams%7D,%20%5Csigma_%7B%5Ctext%7Bteams%7D%7D%5E2\))
 
 with the <code>sigma-seasons</code> defined as above and
 <code>mu-teams</code> and <code>sigma-teams</code> defined as:
 
-\[\mu_\text{teams} \sim \text{Normal}(0, 4^2)\]
-\[\sigma_\text{teams} \sim \text{Uniform}(0, 3)\] We apply a normalizing
-restriction with respect to the (arbitrarily chosen) *first* team in
-each season \(s\) as follows
+![](http://latex.codecogs.com/gif.latex?%5Cmu_%5Ctext%7Bteams%7D%20%5Csim%20%5Ctext%7BNormal%7D\(0,%204%5E2\))
 
-\[\text{skill}_{s,1} = 0\]
+![](http://latex.codecogs.com/gif.latex?%5Csigma_%5Ctext%7Bteams%7D%20%5Csim%20%5Ctext%7BUniform%7D\(0,%203\))
+
+We apply a normalizing restriction with respect to the (arbitrarily
+chosen) *first* team in each season \(s\) as follows
+
+![](http://latex.codecogs.com/gif.latex?%5Ctext%7Bskill%7D_%7Bs,1%7D%20%3D%200)
 
 We choose very vague priors. For example, the prior on the baseline have
 a SD of 4 but since this is on the log scale of the mean number of goals
@@ -179,8 +180,6 @@ with the help of which you can use the [Graph Visualization
 Software](https://graphviz.gitlab.io/).
 
 ![](results/pgm-1.png)<!-- -->
-
-[Return to table of contents](#index)
 
 ### Read data
 
@@ -229,8 +228,6 @@ qplot(Season, HomeTeam, data=d, ylab="Team", xlab = "Season")
 ```
 
 ![](results/participation_by_season-1.png)<!-- -->
-
-[Return to table of contents](#index)
 
 ## Estimation, simulation and validation
 
@@ -296,16 +293,11 @@ m3 <- run.jags(method="parallel",
                model=m3_string,
                monitor=c("home_baseline", "away_baseline","skill", "season_sigma", "group_sigma", "group_skill"),
                data=data_list,
-#               n.chains=3,
-#               adapt=10000,
-#               burnin=10000,
-#               sample=15000,
-#               thin=8,
-               n.chains=1,
-               adapt=100,
-               burnin=100,
-               sample=150,
-               thin=1,
+               n.chains=3,
+               adapt=10000,
+               burnin=10000,
+               sample=15000,
+               thin=8,
                summarise=FALSE,
                plots=FALSE)
 # Generating MCMC samples
@@ -347,14 +339,12 @@ plotPost(exp(ms3[,col_name("home_baseline",to_year-from_year)]) - exp(ms3[,col_n
 
 ![](results/overall_home_advantage-1.png)<!-- -->
 
-    ##                                        mean    median      mode hdiMass
-    ## Home advantage in number of goals 0.4208195 0.4129828 0.3881471    0.95
+    ##                                       mean    median      mode hdiMass
+    ## Home advantage in number of goals 0.431632 0.4284996 0.4222933    0.95
     ##                                      hdiLow   hdiHigh compVal pcGTcompVal
-    ## Home advantage in number of goals 0.2786114 0.5840929       0           1
+    ## Home advantage in number of goals 0.2814409 0.5908113       0           1
     ##                                   ROPElow ROPEhigh pcInROPE
     ## Home advantage in number of goals      NA       NA       NA
-
-[Return to table of contents](#index)
 
 ### Generating predictions (in- and out-of-sample)
 
@@ -406,8 +396,6 @@ m3_pred <- sapply(1:nrow(eredivisie), function(i) {
 })
 m3_pred <- t(m3_pred)
 ```
-
-[Return to table of contents](#index)
 
 ### Model validation
 
@@ -480,13 +468,13 @@ right ballpark.
 mean(eredivisie$HomeGoals == m3_pred[ , "mode_home_goal"], na.rm=T)
 ```
 
-    ## [1] 0.3022487
+    ## [1] 0.3167989
 
 ``` r
 mean((eredivisie$HomeGoals - m3_pred[ , "mean_home_goal"])^2, na.rm=T)
 ```
 
-    ## [1] 1.517698
+    ## [1] 1.508416
 
 So on average the model predicts the correct number of home goals 31% of
 the time and guesses the average number of goals with a mean squared
@@ -528,12 +516,10 @@ hist(m3_pred[ , "rand_match_result"], breaks= (-2:1) + 0.5, xlim=c(-1.5, 1.5), y
 mean(eredivisie$MatchResult == m3_pred[ , "match_result"], na.rm=T)
 ```
 
-    ## [1] 0.5694444
+    ## [1] 0.5681217
 
 The model predicts the correct match outcome (i.e. home team wins / a
 draw / away team wins) 57% of the time. Pretty good\!
-
-[Return to table of contents](#index)
 
 ## Results
 
@@ -593,14 +579,12 @@ plotPost(team_skill[, "Ajax"] - team_skill[, "PSV Eindhoven"], compVal = 0, xlab
 
 ![](results/team_skill_PSV_Ajax-1.png)<!-- -->
 
-    ##                                mean   median      mode hdiMass     hdiLow
-    ## <- PSV     vs     Ajax -> 0.1832536 0.145114 0.1229079    0.95 -0.3516638
+    ##                               mean    median      mode hdiMass     hdiLow
+    ## <- PSV     vs     Ajax -> 0.166562 0.1581584 0.1227583    0.95 -0.3601816
     ##                             hdiHigh compVal pcGTcompVal ROPElow ROPEhigh
-    ## <- PSV     vs     Ajax -> 0.8575128       0   0.7533333      NA       NA
+    ## <- PSV     vs     Ajax -> 0.6779463       0   0.7369778      NA       NA
     ##                           pcInROPE
     ## <- PSV     vs     Ajax ->       NA
-
-[Return to table of contents](#index)
 
 ### Predicting the future
 
@@ -633,7 +617,7 @@ print(xtable(eredivisie_forecast, align="cccccccccc"), type="html")
 
 <!-- html table generated in R 3.6.1 by xtable 1.8-4 package -->
 
-<!-- Sat Aug 15 10:57:41 2020 -->
+<!-- Sun Aug 16 11:39:17 2020 -->
 
 <table border="1">
 
@@ -733,25 +717,25 @@ Utrecht
 
 <td align="center">
 
-2.80
+2.90
 
 </td>
 
 <td align="center">
 
-0.90
+0.80
 
 </td>
 
 <td align="center">
 
-3.00
+2.00
 
 </td>
 
 <td align="center">
 
-1.00
+0.00
 
 </td>
 
@@ -803,7 +787,7 @@ PSV Eindhoven
 
 <td align="center">
 
-2.00
+1.80
 
 </td>
 
@@ -861,7 +845,7 @@ For Sittard
 
 <td align="center">
 
-2.00
+2.10
 
 </td>
 
@@ -873,7 +857,7 @@ For Sittard
 
 <td align="center">
 
-1.00
+2.00
 
 </td>
 
@@ -925,7 +909,7 @@ Den Haag
 
 <td align="center">
 
-2.80
+2.70
 
 </td>
 
@@ -937,7 +921,7 @@ Den Haag
 
 <td align="center">
 
-3.00
+2.00
 
 </td>
 
@@ -995,7 +979,7 @@ NAC Breda
 
 <td align="center">
 
-1.10
+1.00
 
 </td>
 
@@ -1007,7 +991,7 @@ NAC Breda
 
 <td align="center">
 
-0.00
+1.00
 
 </td>
 
@@ -1059,7 +1043,7 @@ Graafschap
 
 <td align="center">
 
-1.00
+0.90
 
 </td>
 
@@ -1071,7 +1055,7 @@ Graafschap
 
 <td align="center">
 
-1.00
+0.00
 
 </td>
 
@@ -1117,19 +1101,19 @@ FC Emmen
 
 <td align="center">
 
+2.10
+
+</td>
+
+<td align="center">
+
+1.10
+
+</td>
+
+<td align="center">
+
 2.00
-
-</td>
-
-<td align="center">
-
-1.30
-
-</td>
-
-<td align="center">
-
-1.00
 
 </td>
 
@@ -1187,13 +1171,13 @@ VVV Venlo
 
 <td align="center">
 
-1.50
+1.20
 
 </td>
 
 <td align="center">
 
-2.00
+1.00
 
 </td>
 
@@ -1251,19 +1235,19 @@ Excelsior
 
 <td align="center">
 
-0.90
+1.10
+
+</td>
+
+<td align="center">
+
+2.00
 
 </td>
 
 <td align="center">
 
 1.00
-
-</td>
-
-<td align="center">
-
-0.00
 
 </td>
 
@@ -1315,13 +1299,13 @@ Willem II
 
 <td align="center">
 
-1.20
+1.30
 
 </td>
 
 <td align="center">
 
-2.00
+1.00
 
 </td>
 
@@ -1373,13 +1357,13 @@ Ajax
 
 <td align="center">
 
-0.70
+0.80
 
 </td>
 
 <td align="center">
 
-3.10
+3.00
 
 </td>
 
@@ -1437,7 +1421,7 @@ Heerenveen
 
 <td align="center">
 
-2.20
+2.00
 
 </td>
 
@@ -1449,7 +1433,7 @@ Heerenveen
 
 <td align="center">
 
-2.00
+1.00
 
 </td>
 
@@ -1501,13 +1485,13 @@ Zwolle
 
 <td align="center">
 
-1.30
+1.40
 
 </td>
 
 <td align="center">
 
-1.80
+1.60
 
 </td>
 
@@ -1565,19 +1549,19 @@ Heracles
 
 <td align="center">
 
-3.30
+3.10
 
 </td>
 
 <td align="center">
 
-0.80
+0.70
 
 </td>
 
 <td align="center">
 
-2.00
+3.00
 
 </td>
 
@@ -1629,19 +1613,13 @@ Groningen
 
 <td align="center">
 
-1.50
+1.40
 
 </td>
 
 <td align="center">
 
-1.50
-
-</td>
-
-<td align="center">
-
-1.00
+1.70
 
 </td>
 
@@ -1653,7 +1631,13 @@ Groningen
 
 <td align="center">
 
-FC Emmen
+1.00
+
+</td>
+
+<td align="center">
+
+Groningen
 
 </td>
 
@@ -1699,19 +1683,19 @@ AZ Alkmaar
 
 <td align="center">
 
-2.20
-
-</td>
-
-<td align="center">
-
-0.00
-
-</td>
-
-<td align="center">
-
 2.00
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+1.00
 
 </td>
 
@@ -1757,7 +1741,7 @@ Feyenoord
 
 <td align="center">
 
-1.20
+1.00
 
 </td>
 
@@ -1775,7 +1759,7 @@ Feyenoord
 
 <td align="center">
 
-1.00
+2.00
 
 </td>
 
@@ -1821,7 +1805,7 @@ Vitesse
 
 <td align="center">
 
-1.40
+1.30
 
 </td>
 
@@ -1873,7 +1857,7 @@ print(xtable(eredivisie_sim, align="cccccccc"), type="html")
 
 <!-- html table generated in R 3.6.1 by xtable 1.8-4 package -->
 
-<!-- Sat Aug 15 10:57:41 2020 -->
+<!-- Sun Aug 16 11:39:17 2020 -->
 
 <table border="1">
 
@@ -1961,7 +1945,7 @@ Utrecht
 
 <td align="center">
 
-7.00
+2.00
 
 </td>
 
@@ -2013,7 +1997,7 @@ PSV Eindhoven
 
 <td align="center">
 
-1.00
+2.00
 
 </td>
 
@@ -2025,7 +2009,7 @@ PSV Eindhoven
 
 <td align="center">
 
-Draw
+AZ Alkmaar
 
 </td>
 
@@ -2065,13 +2049,13 @@ For Sittard
 
 <td align="center">
 
-1.00
+3.00
 
 </td>
 
 <td align="center">
 
-0.00
+1.00
 
 </td>
 
@@ -2117,7 +2101,7 @@ Den Haag
 
 <td align="center">
 
-3.00
+2.00
 
 </td>
 
@@ -2169,7 +2153,7 @@ NAC Breda
 
 <td align="center">
 
-2.00
+1.00
 
 </td>
 
@@ -2181,7 +2165,7 @@ NAC Breda
 
 <td align="center">
 
-Heerenveen
+Draw
 
 </td>
 
@@ -2221,13 +2205,13 @@ Graafschap
 
 <td align="center">
 
-1.00
+0.00
 
 </td>
 
 <td align="center">
 
-1.00
+0.00
 
 </td>
 
@@ -2273,7 +2257,7 @@ FC Emmen
 
 <td align="center">
 
-3.00
+2.00
 
 </td>
 
@@ -2325,19 +2309,19 @@ VVV Venlo
 
 <td align="center">
 
+2.00
+
+</td>
+
+<td align="center">
+
 1.00
 
 </td>
 
 <td align="center">
 
-3.00
-
-</td>
-
-<td align="center">
-
-VVV Venlo
+Zwolle
 
 </td>
 
@@ -2383,13 +2367,13 @@ Excelsior
 
 <td align="center">
 
-2.00
+0.00
 
 </td>
 
 <td align="center">
 
-Draw
+Heracles
 
 </td>
 
@@ -2429,19 +2413,19 @@ Willem II
 
 <td align="center">
 
-2.00
+1.00
 
 </td>
 
 <td align="center">
 
-4.00
+1.00
 
 </td>
 
 <td align="center">
 
-Willem II
+Draw
 
 </td>
 
@@ -2481,13 +2465,13 @@ Ajax
 
 <td align="center">
 
-1.00
+0.00
 
 </td>
 
 <td align="center">
 
-2.00
+6.00
 
 </td>
 
@@ -2533,13 +2517,13 @@ Heerenveen
 
 <td align="center">
 
-3.00
+2.00
 
 </td>
 
 <td align="center">
 
-1.00
+0.00
 
 </td>
 
@@ -2591,13 +2575,13 @@ Zwolle
 
 <td align="center">
 
-1.00
+2.00
 
 </td>
 
 <td align="center">
 
-Draw
+Zwolle
 
 </td>
 
@@ -2637,13 +2621,13 @@ Heracles
 
 <td align="center">
 
-1.00
+2.00
 
 </td>
 
 <td align="center">
 
-1.00
+2.00
 
 </td>
 
@@ -2689,19 +2673,19 @@ Groningen
 
 <td align="center">
 
-4.00
+1.00
 
 </td>
 
 <td align="center">
 
-0.00
+1.00
 
 </td>
 
 <td align="center">
 
-FC Emmen
+Draw
 
 </td>
 
@@ -2741,19 +2725,19 @@ AZ Alkmaar
 
 <td align="center">
 
-0.00
+1.00
 
 </td>
 
 <td align="center">
 
-4.00
+1.00
 
 </td>
 
 <td align="center">
 
-AZ Alkmaar
+Draw
 
 </td>
 
@@ -2793,13 +2777,13 @@ Feyenoord
 
 <td align="center">
 
-0.00
+1.00
 
 </td>
 
 <td align="center">
 
-2.00
+3.00
 
 </td>
 
@@ -2845,19 +2829,19 @@ Vitesse
 
 <td align="center">
 
-2.00
+1.00
 
 </td>
 
 <td align="center">
 
-4.00
+0.00
 
 </td>
 
 <td align="center">
 
-Vitesse
+VVV Venlo
 
 </td>
 
@@ -2871,8 +2855,6 @@ leaderboard\! However, in round 34 the image is reversed when PSV and
 Heracles tie, against all odds. So, in the end, Ajax wins the
 competition in this *possible* version of the Eredivisie endgame by
 their better goal difference.
-
-[Return to table of contents](#index)
 
 ### Betting on the match outcome
 
@@ -2961,7 +2943,7 @@ model are very close to the payouts that William Hill offers.
 ```
 
     ##       AZ     Draw      PSV 
-    ## 3.125000 4.285714 2.238806
+    ## 3.806141 4.385537 1.963693
 
 The most likely result is 1 - 1 with a predicted payout of 9.70, which
 can be compared to the William Hill payout of 7.50 for this bet. Thus,
@@ -2969,8 +2951,6 @@ William Hill thinks that a 1 - 1 draw is even likier than our model
 predicts. If we want to earn some extra money, we should bet on a 1 - 0
 win for AZ, as the William Hill payout is 19 and our model predicts
 17.50.
-
-[Return to table of contents](#index)
 
 ### Betting on the correct score
 
@@ -3005,7 +2985,7 @@ print(xtable(goals_payout, align="cccccccc"), type="html")
 
 <!-- html table generated in R 3.6.1 by xtable 1.8-4 package -->
 
-<!-- Sat Aug 15 10:57:42 2020 -->
+<!-- Sun Aug 16 11:39:17 2020 -->
 
 <table border="1">
 
@@ -3069,43 +3049,43 @@ AZ Alkmaar - 0
 
 <td align="center">
 
-25.00
+22.50
 
 </td>
 
 <td align="center">
 
-16.70
+12.00
 
 </td>
 
 <td align="center">
 
-10.70
+13.00
 
 </td>
 
 <td align="center">
 
-13.60
+20.50
 
 </td>
 
 <td align="center">
 
-150.00
+47.60
 
 </td>
 
 <td align="center">
 
-Inf
+120.60
 
 </td>
 
 <td align="center">
 
-Inf
+354.30
 
 </td>
 
@@ -3121,43 +3101,43 @@ AZ Alkmaar - 1
 
 <td align="center">
 
-21.40
+17.30
 
 </td>
 
 <td align="center">
 
-9.40
+9.50
 
 </td>
 
 <td align="center">
 
-11.50
+10.60
 
 </td>
 
 <td align="center">
 
-16.70
+16.90
 
 </td>
 
 <td align="center">
 
-50.00
+38.50
 
 </td>
 
 <td align="center">
 
-Inf
+100.40
 
 </td>
 
 <td align="center">
 
-150.00
+281.20
 
 </td>
 
@@ -3173,43 +3153,43 @@ AZ Alkmaar - 2
 
 <td align="center">
 
-16.70
+27.80
 
 </td>
 
 <td align="center">
 
-13.60
+15.60
 
 </td>
 
 <td align="center">
 
-12.50
+16.50
 
 </td>
 
 <td align="center">
 
-75.00
+28.10
 
 </td>
 
 <td align="center">
 
-75.00
+58.10
 
 </td>
 
 <td align="center">
 
-Inf
+158.50
 
 </td>
 
 <td align="center">
 
-150.00
+436.90
 
 </td>
 
@@ -3225,43 +3205,43 @@ AZ Alkmaar - 3
 
 <td align="center">
 
-150.00
+64.70
 
 </td>
 
 <td align="center">
 
-37.50
+35.40
 
 </td>
 
 <td align="center">
 
-37.50
+39.60
 
 </td>
 
 <td align="center">
 
-150.00
+66.40
 
 </td>
 
 <td align="center">
 
-Inf
+156.80
 
 </td>
 
 <td align="center">
 
-150.00
+445.50
 
 </td>
 
 <td align="center">
 
-Inf
+1956.50
 
 </td>
 
@@ -3277,43 +3257,43 @@ AZ Alkmaar - 4
 
 <td align="center">
 
-37.50
+189.10
 
 </td>
 
 <td align="center">
 
-75.00
+116.00
 
 </td>
 
 <td align="center">
 
-75.00
+124.00
 
 </td>
 
 <td align="center">
 
-150.00
+211.30
 
 </td>
 
 <td align="center">
 
-Inf
+483.90
 
 </td>
 
 <td align="center">
 
-Inf
+1216.20
 
 </td>
 
 <td align="center">
 
-Inf
+3750.00
 
 </td>
 
@@ -3329,43 +3309,43 @@ AZ Alkmaar - 5
 
 <td align="center">
 
-Inf
+900.00
 
 </td>
 
 <td align="center">
 
-150.00
+412.80
 
 </td>
 
 <td align="center">
 
-150.00
+494.50
 
 </td>
 
 <td align="center">
 
-150.00
+762.70
 
 </td>
 
 <td align="center">
 
-Inf
+2045.50
 
 </td>
 
 <td align="center">
 
-Inf
+3461.50
 
 </td>
 
 <td align="center">
 
-Inf
+22500.00
 
 </td>
 
@@ -3381,43 +3361,43 @@ AZ Alkmaar - 6
 
 <td align="center">
 
-Inf
+5000.00
 
 </td>
 
 <td align="center">
 
-Inf
+1551.70
 
 </td>
 
 <td align="center">
 
-Inf
+2142.90
 
 </td>
 
 <td align="center">
 
-Inf
+5625.00
 
 </td>
 
 <td align="center">
 
-Inf
+7500.00
 
 </td>
 
 <td align="center">
 
-Inf
+15000.00
 
 </td>
 
 <td align="center">
 
-Inf
+22500.00
 
 </td>
 
@@ -3428,8 +3408,6 @@ Inf
 The most likely result is 1 - 1 with a predicted payout of 9.70, which
 can be compared to the William Hill payout of 7.50 for this bet. This,
 we can earn some extra money if we bet on this end score.
-
-[Return to table of contents](#index)
 
 ### Betting results
 
@@ -3462,13 +3440,9 @@ experience [on
 LinkedIn](https://www.linkedin.com/pulse/de-bal-rond-piet-stam/) (in
 Dutch) at the time.
 
-[Return to table of contents](#index)
-
 ## Appendix
 
 ### Who do you call?
 
 You can contact me at my GitHub email address if you would like to share
 your thoughts.
-
-[Return to table of contents](#index)

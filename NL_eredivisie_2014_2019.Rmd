@@ -22,8 +22,6 @@ knitr::knit_hooks$set(purl = knitr::hook_purl)
 ### Quick summary
 We applied the original work of [Rasmus Baath](http://www.sumsar.net/about.html) to the Dutch Eredivisie football competition. With `r-bayesian-football-odds` we estimated the odds of football matches in the last two weeks of the 2018/2019 Dutch Eredivisie football competiton. We provide the code and evaluate the results of our predictions. 
 
-[Return to table of contents](#index)
-
 ### Acknowledgements
 This piece of work is based on the works of [Rasmus Baath](http://www.sumsar.net/blog/2013/07/modeling-match-results-in-la-liga-part-one/). Rasmus Baath submitted his code to the [UseR 2013 data analysis contest](https://www.r-project.org/conferences/useR-2013/) and licensed it under the Creative Commons [Attribution 3.0 Unported license](http://creativecommons.org/licenses/by/3.0/). 
 
@@ -32,8 +30,6 @@ He predicted the results of the 50 last matches of the 2012/2013 Spanish LaLiga 
 I slightly adpated his code to predict the results of the last two competition rounds (that is, the last 18 matches) of the 2018/2019 Dutch Eredivisie season. These predictions are based on soccer match data of the 2014/15-2018/19 seasons (5 seasons in total). The source of these data is [here](http://www.football-data.co.uk/netherlandsm.php). Out of the three model specifications that Rasmus developed, I used the most sophisticated model that allowed for year-to-year variability in team skill (called "iteration 3" by Rasmus).
 
 You can find my code at [GitHub](https://github.com/pjastam/r-bayesian-football-odds). Rasmus deserves all the credits, I deserve all the blame in case of any errors in my application to the Dutch football competition.
-
-[Return to table of contents](#index)
 
 ## Data and methods
 
@@ -78,7 +74,7 @@ with the <code>lambdas</code> defined as follows
 
 Note that the <code>baseline</code> is split into <code>home_baseline</code> and <code>away_baseline</code> in order to account for the home advantage. Furthermore, we introduced the index t for the baseline and skill parameters to allow for variation among seasons.
 
-#### Defining the baseline distributions
+##### Defining the baseline distributions
 
 I set the prior distributions of the baselines in season $s$ to:
 
@@ -96,7 +92,7 @@ with <code>sigma-seasons</code> defined as:
 
 `r latexImg('\\sigma_\\text{seasons} \\sim \\text{Uniform}(0, 3)')`
 
-#### Defining the team skill distributions
+##### Defining the team skill distributions
 
 I set the prior distributions over the skills of team $i$ (or $j$, denoted as i|j) in season $s$ to:
 
@@ -200,8 +196,6 @@ digraph G {
 ")
 ```
 
-[Return to table of contents](#index)
-
 ### Read data
 
 ```{r setup, include=FALSE}
@@ -263,8 +257,6 @@ The data set <code>eredivisie</code> contains data from 5 different seasons. In 
 qplot(Season, HomeTeam, data=d, ylab="Team", xlab = "Season")
 ```
 
-[Return to table of contents](#index)
-
 ## Estimation, simulation and validation
 
 ### Model estimation
@@ -321,16 +313,11 @@ m3 <- run.jags(method="parallel",
                model=m3_string,
                monitor=c("home_baseline", "away_baseline","skill", "season_sigma", "group_sigma", "group_skill"),
                data=data_list,
-#               n.chains=3,
-#               adapt=10000,
-#               burnin=10000,
-#               sample=15000,
-#               thin=8,
-               n.chains=1,
-               adapt=100,
-               burnin=100,
-               sample=150,
-               thin=1,
+               n.chains=3,
+               adapt=10000,
+               burnin=10000,
+               sample=15000,
+               thin=8,
                summarise=FALSE,
                plots=FALSE)
 # Generating MCMC samples
@@ -352,8 +339,6 @@ We can also calculate the default home advantage by looking at the difference be
 ```{r overall_home_advantage}
 plotPost(exp(ms3[,col_name("home_baseline",to_year-from_year)]) - exp(ms3[,col_name("away_baseline",to_year-from_year)]), compVal = 0, xlab = "Home advantage in number of goals")
 ```
-
-[Return to table of contents](#index)
 
 ### Generating predictions (in- and out-of-sample)
 
@@ -394,8 +379,6 @@ m3_pred <- sapply(1:nrow(eredivisie), function(i) {
 })
 m3_pred <- t(m3_pred)
 ```
-
-[Return to table of contents](#index)
 
 ### Model validation
 
@@ -473,8 +456,6 @@ mean(eredivisie$MatchResult == m3_pred[ , "match_result"], na.rm=T)
 ```
 The model predicts the correct match outcome (i.e. home team wins / a draw / away team wins) 57% of the time. Pretty good!
 
-[Return to table of contents](#index)
-
 ## Results
 
 Disclaimer: my comments below may be out of sync with the empirical results and graphs, because these comments (as well as the description of my betting experience in the last section) are based on the results of running [VERSION 1.0](https://github.com/pjastam/r-bayesian-football-odds/releases/tag/v1.0) instead of the current version of the app.
@@ -501,7 +482,6 @@ Two teams are clearly ahead of the rest, Ajax and PSV. Let\'s look at the credib
 ```{r team_skill_PSV_Ajax, fig.height=3, fig.width=7}
 plotPost(team_skill[, "Ajax"] - team_skill[, "PSV Eindhoven"], compVal = 0, xlab = "<- PSV     vs     Ajax ->")
 ```
-[Return to table of contents](#index)
 
 ### Predicting the future
 
@@ -537,8 +517,6 @@ print(xtable(eredivisie_sim, align="cccccccc"), type="html")
 ```
 
 Now we see a number of games resulting in a draw. We also see that Ajax and FC Utrecht tie in round 33, which puts PSV on top of the leaderboard! However, in round 34 the image is reversed when PSV and Heracles tie, against all odds. So, in the end, Ajax wins the competition in this *possible* version of the Eredivisie endgame by their better goal difference.
-
-[Return to table of contents](#index)
 
 ### Betting on the match outcome
 
@@ -598,8 +576,6 @@ Using my simulated distribution of the number of goals I can calculate the predi
 
 The most likely result is 1 - 1 with a predicted payout of 9.70, which can be compared to the William Hill payout of 7.50 for this bet. Thus, William Hill thinks that a 1 - 1 draw is even likier than our model predicts. If we want to earn some extra money, we should bet on a 1 - 0 win for AZ, as the William Hill payout is 19 and our model predicts 17.50.
 
-[Return to table of contents](#index)
-
 ### Betting on the correct score
 
 It is also possible to bet on the final goal outcome so let\'s calculate what payouts my model predicts for different goal outcomes. The payouts that William Hill reports are
@@ -629,8 +605,6 @@ print(xtable(goals_payout, align="cccccccc"), type="html")
 
 The most likely result is 1 - 1 with a predicted payout of 9.70, which can be compared to the William Hill payout of 7.50 for this bet. This, we can earn some extra money if we bet on this end score.
 
-[Return to table of contents](#index)
-
 ### Betting results
 
 As the English say: "put your money where your mouth is". So, at the time, I placed a 1 euro bet on three potential outcomes of the AZ-PSV match:
@@ -651,12 +625,8 @@ So, with a 3 euro stake I earned 4.15 euro, which means a profit margin of 1.15 
 
 For those interested, my bets were placed on [the Dutch Lottery website](https://toto.nederlandseloterij.nl/) (disclosure: I do *not* own shares in that company) and I posted about my one-off betting experience [on LinkedIn](https://www.linkedin.com/pulse/de-bal-rond-piet-stam/) (in Dutch) at the time.
 
-[Return to table of contents](#index)
-
 ## Appendix
 
 ### Who do you call?
 
 You can contact me at my GitHub email address if you would like to share your thoughts.
-
-[Return to table of contents](#index)
