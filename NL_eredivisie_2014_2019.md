@@ -1,7 +1,7 @@
 Bayesian estimation of a Poisson model for Dutch football matches odds
 ================
 Piet Stam
-August 15th, 2020
+August 28th, 2020
 
   - [Introduction](#introduction)
       - [Quick summary](#quick-summary)
@@ -189,7 +189,7 @@ result is a database called `eredivisie`.
 
 ``` r
 from_year <- 2014
-to_year <- 2019
+to_year <- 2020
 source(paste0("functions/Import_Data_Eredivisie.R"))
 ```
 
@@ -339,10 +339,10 @@ plotPost(exp(ms3[,col_name("home_baseline",to_year-from_year)]) - exp(ms3[,col_n
 
 ![](results/overall_home_advantage-1.png)<!-- -->
 
-    ##                                       mean    median      mode hdiMass
-    ## Home advantage in number of goals 0.431632 0.4284996 0.4222933    0.95
+    ##                                        mean    median     mode hdiMass
+    ## Home advantage in number of goals 0.5398459 0.5387851 0.543352    0.95
     ##                                      hdiLow   hdiHigh compVal pcGTcompVal
-    ## Home advantage in number of goals 0.2814409 0.5908113       0           1
+    ## Home advantage in number of goals 0.3725848 0.7140152       0           1
     ##                                   ROPElow ROPEhigh pcInROPE
     ## Home advantage in number of goals      NA       NA       NA
 
@@ -468,13 +468,13 @@ right ballpark.
 mean(eredivisie$HomeGoals == m3_pred[ , "mode_home_goal"], na.rm=T)
 ```
 
-    ## [1] 0.3167989
+    ## [1] 0.3132804
 
 ``` r
 mean((eredivisie$HomeGoals - m3_pred[ , "mean_home_goal"])^2, na.rm=T)
 ```
 
-    ## [1] 1.508416
+    ## [1] 1.547052
 
 So on average the model predicts the correct number of home goals 31% of
 the time and guesses the average number of goals with a mean squared
@@ -516,7 +516,7 @@ hist(m3_pred[ , "rand_match_result"], breaks= (-2:1) + 0.5, xlim=c(-1.5, 1.5), y
 mean(eredivisie$MatchResult == m3_pred[ , "match_result"], na.rm=T)
 ```
 
-    ## [1] 0.5681217
+    ## [1] 0.5646992
 
 The model predicts the correct match outcome (i.e. home team wins / a
 draw / away team wins) 57% of the time. Pretty good\!
@@ -579,10 +579,10 @@ plotPost(team_skill[, "Ajax"] - team_skill[, "PSV Eindhoven"], compVal = 0, xlab
 
 ![](results/team_skill_PSV_Ajax-1.png)<!-- -->
 
-    ##                               mean    median      mode hdiMass     hdiLow
-    ## <- PSV     vs     Ajax -> 0.166562 0.1581584 0.1227583    0.95 -0.3601816
+    ##                                mean    median      mode hdiMass     hdiLow
+    ## <- PSV     vs     Ajax -> 0.3432887 0.3327736 0.3145308    0.95 -0.1808036
     ##                             hdiHigh compVal pcGTcompVal ROPElow ROPEhigh
-    ## <- PSV     vs     Ajax -> 0.6779463       0   0.7369778      NA       NA
+    ## <- PSV     vs     Ajax -> 0.9228638       0   0.8949778      NA       NA
     ##                           pcInROPE
     ## <- PSV     vs     Ajax ->       NA
 
@@ -617,7 +617,7 @@ print(xtable(eredivisie_forecast, align="cccccccccc"), type="html")
 
 <!-- html table generated in R 3.6.1 by xtable 1.8-4 package -->
 
-<!-- Sun Aug 16 11:39:17 2020 -->
+<!-- Fri Aug 28 14:44:38 2020 -->
 
 <table border="1">
 
@@ -693,37 +693,25 @@ predicted\_winner
 
 <td align="center">
 
-2018/2019
+2019/2020
 
 </td>
 
 <td align="center">
 
-40
+33
 
 </td>
 
 <td align="center">
 
-Ajax
+Den Haag
 
 </td>
 
 <td align="center">
 
-Utrecht
-
-</td>
-
-<td align="center">
-
-2.90
-
-</td>
-
-<td align="center">
-
-0.80
+For Sittard
 
 </td>
 
@@ -735,13 +723,25 @@ Utrecht
 
 <td align="center">
 
-0.00
+1.10
 
 </td>
 
 <td align="center">
 
-Ajax
+1.00
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+Den Haag
 
 </td>
 
@@ -757,25 +757,31 @@ Ajax
 
 <td align="center">
 
-2018/2019
+2019/2020
 
 </td>
 
 <td align="center">
 
-40
+33
 
 </td>
 
 <td align="center">
 
-AZ Alkmaar
+Willem II
 
 </td>
 
 <td align="center">
 
-PSV Eindhoven
+Heerenveen
+
+</td>
+
+<td align="center">
+
+1.70
 
 </td>
 
@@ -787,12 +793,6 @@ PSV Eindhoven
 
 <td align="center">
 
-1.80
-
-</td>
-
-<td align="center">
-
 1.00
 
 </td>
@@ -805,7 +805,7 @@ PSV Eindhoven
 
 <td align="center">
 
-PSV Eindhoven
+Willem II
 
 </td>
 
@@ -821,55 +821,55 @@ PSV Eindhoven
 
 <td align="center">
 
-2018/2019
+2019/2020
 
 </td>
 
 <td align="center">
 
-40
+33
 
 </td>
 
 <td align="center">
 
-Groningen
+Ajax
 
 </td>
 
 <td align="center">
 
-For Sittard
+Twente
 
 </td>
 
 <td align="center">
 
-2.10
+3.50
 
 </td>
 
 <td align="center">
 
-1.10
+0.60
 
 </td>
 
 <td align="center">
 
-2.00
+3.00
 
 </td>
 
 <td align="center">
 
-1.00
+0.00
 
 </td>
 
 <td align="center">
 
-Groningen
+Ajax
 
 </td>
 
@@ -885,141 +885,19 @@ Groningen
 
 <td align="center">
 
-2018/2019
+2019/2020
 
 </td>
 
 <td align="center">
 
-40
+33
 
 </td>
 
 <td align="center">
 
-Feyenoord
-
-</td>
-
-<td align="center">
-
-Den Haag
-
-</td>
-
-<td align="center">
-
-2.70
-
-</td>
-
-<td align="center">
-
-0.90
-
-</td>
-
-<td align="center">
-
-2.00
-
-</td>
-
-<td align="center">
-
-0.00
-
-</td>
-
-<td align="center">
-
-Feyenoord
-
-</td>
-
-</tr>
-
-<tr>
-
-<td align="center">
-
-5
-
-</td>
-
-<td align="center">
-
-2018/2019
-
-</td>
-
-<td align="center">
-
-40
-
-</td>
-
-<td align="center">
-
-Heerenveen
-
-</td>
-
-<td align="center">
-
-NAC Breda
-
-</td>
-
-<td align="center">
-
-2.20
-
-</td>
-
-<td align="center">
-
-1.00
-
-</td>
-
-<td align="center">
-
-2.00
-
-</td>
-
-<td align="center">
-
-1.00
-
-</td>
-
-<td align="center">
-
-Heerenveen
-
-</td>
-
-</tr>
-
-<tr>
-
-<td align="center">
-
-6
-
-</td>
-
-<td align="center">
-
-2018/2019
-
-</td>
-
-<td align="center">
-
-40
+Utrecht
 
 </td>
 
@@ -1031,269 +909,7 @@ Vitesse
 
 <td align="center">
 
-Graafschap
-
-</td>
-
-<td align="center">
-
-2.60
-
-</td>
-
-<td align="center">
-
-0.90
-
-</td>
-
-<td align="center">
-
-2.00
-
-</td>
-
-<td align="center">
-
-0.00
-
-</td>
-
-<td align="center">
-
-Vitesse
-
-</td>
-
-</tr>
-
-<tr>
-
-<td align="center">
-
-7
-
-</td>
-
-<td align="center">
-
-2018/2019
-
-</td>
-
-<td align="center">
-
-40
-
-</td>
-
-<td align="center">
-
-Willem II
-
-</td>
-
-<td align="center">
-
-FC Emmen
-
-</td>
-
-<td align="center">
-
-2.10
-
-</td>
-
-<td align="center">
-
-1.10
-
-</td>
-
-<td align="center">
-
-2.00
-
-</td>
-
-<td align="center">
-
-1.00
-
-</td>
-
-<td align="center">
-
-Willem II
-
-</td>
-
-</tr>
-
-<tr>
-
-<td align="center">
-
-8
-
-</td>
-
-<td align="center">
-
-2018/2019
-
-</td>
-
-<td align="center">
-
-40
-
-</td>
-
-<td align="center">
-
-Zwolle
-
-</td>
-
-<td align="center">
-
-VVV Venlo
-
-</td>
-
-<td align="center">
-
-1.90
-
-</td>
-
-<td align="center">
-
-1.20
-
-</td>
-
-<td align="center">
-
-1.00
-
-</td>
-
-<td align="center">
-
-1.00
-
-</td>
-
-<td align="center">
-
-Zwolle
-
-</td>
-
-</tr>
-
-<tr>
-
-<td align="center">
-
-9
-
-</td>
-
-<td align="center">
-
-2018/2019
-
-</td>
-
-<td align="center">
-
-40
-
-</td>
-
-<td align="center">
-
-Heracles
-
-</td>
-
-<td align="center">
-
-Excelsior
-
-</td>
-
-<td align="center">
-
-2.00
-
-</td>
-
-<td align="center">
-
-1.10
-
-</td>
-
-<td align="center">
-
-2.00
-
-</td>
-
-<td align="center">
-
-1.00
-
-</td>
-
-<td align="center">
-
-Heracles
-
-</td>
-
-</tr>
-
-<tr>
-
-<td align="center">
-
-10
-
-</td>
-
-<td align="center">
-
-2018/2019
-
-</td>
-
-<td align="center">
-
-40
-
-</td>
-
-<td align="center">
-
-Den Haag
-
-</td>
-
-<td align="center">
-
-Willem II
-
-</td>
-
-<td align="center">
-
-1.80
+1.70
 
 </td>
 
@@ -1317,134 +933,6 @@ Willem II
 
 <td align="center">
 
-Den Haag
-
-</td>
-
-</tr>
-
-<tr>
-
-<td align="center">
-
-11
-
-</td>
-
-<td align="center">
-
-2018/2019
-
-</td>
-
-<td align="center">
-
-40
-
-</td>
-
-<td align="center">
-
-Graafschap
-
-</td>
-
-<td align="center">
-
-Ajax
-
-</td>
-
-<td align="center">
-
-0.80
-
-</td>
-
-<td align="center">
-
-3.00
-
-</td>
-
-<td align="center">
-
-0.00
-
-</td>
-
-<td align="center">
-
-2.00
-
-</td>
-
-<td align="center">
-
-Ajax
-
-</td>
-
-</tr>
-
-<tr>
-
-<td align="center">
-
-12
-
-</td>
-
-<td align="center">
-
-2018/2019
-
-</td>
-
-<td align="center">
-
-40
-
-</td>
-
-<td align="center">
-
-Utrecht
-
-</td>
-
-<td align="center">
-
-Heerenveen
-
-</td>
-
-<td align="center">
-
-2.00
-
-</td>
-
-<td align="center">
-
-1.20
-
-</td>
-
-<td align="center">
-
-1.00
-
-</td>
-
-<td align="center">
-
-1.00
-
-</td>
-
-<td align="center">
-
 Utrecht
 
 </td>
@@ -1455,89 +943,25 @@ Utrecht
 
 <td align="center">
 
-13
+5
 
 </td>
 
 <td align="center">
 
-2018/2019
+2019/2020
 
 </td>
 
 <td align="center">
 
-40
-
-</td>
-
-<td align="center">
-
-NAC Breda
+33
 
 </td>
 
 <td align="center">
 
 Zwolle
-
-</td>
-
-<td align="center">
-
-1.40
-
-</td>
-
-<td align="center">
-
-1.60
-
-</td>
-
-<td align="center">
-
-1.00
-
-</td>
-
-<td align="center">
-
-1.00
-
-</td>
-
-<td align="center">
-
-Zwolle
-
-</td>
-
-</tr>
-
-<tr>
-
-<td align="center">
-
-14
-
-</td>
-
-<td align="center">
-
-2018/2019
-
-</td>
-
-<td align="center">
-
-40
-
-</td>
-
-<td align="center">
-
-PSV Eindhoven
 
 </td>
 
@@ -1549,13 +973,141 @@ Heracles
 
 <td align="center">
 
-3.10
+1.70
 
 </td>
 
 <td align="center">
 
-0.70
+1.30
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+Zwolle
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+6
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+33
+
+</td>
+
+<td align="center">
+
+Sparta Rotterdam
+
+</td>
+
+<td align="center">
+
+Feyenoord
+
+</td>
+
+<td align="center">
+
+1.10
+
+</td>
+
+<td align="center">
+
+1.90
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+Feyenoord
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+7
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+33
+
+</td>
+
+<td align="center">
+
+PSV Eindhoven
+
+</td>
+
+<td align="center">
+
+FC Emmen
+
+</td>
+
+<td align="center">
+
+3.40
+
+</td>
+
+<td align="center">
+
+0.60
 
 </td>
 
@@ -1583,25 +1135,89 @@ PSV Eindhoven
 
 <td align="center">
 
-15
+8
 
 </td>
 
 <td align="center">
 
-2018/2019
+2019/2020
 
 </td>
 
 <td align="center">
 
-40
+33
 
 </td>
 
 <td align="center">
 
-FC Emmen
+VVV Venlo
+
+</td>
+
+<td align="center">
+
+AZ Alkmaar
+
+</td>
+
+<td align="center">
+
+1.10
+
+</td>
+
+<td align="center">
+
+2.00
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+AZ Alkmaar
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+9
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+33
+
+</td>
+
+<td align="center">
+
+Waalwijk
 
 </td>
 
@@ -1613,7 +1229,7 @@ Groningen
 
 <td align="center">
 
-1.40
+1.30
 
 </td>
 
@@ -1647,37 +1263,171 @@ Groningen
 
 <td align="center">
 
-16
+10
 
 </td>
 
 <td align="center">
 
-2018/2019
+2019/2020
 
 </td>
 
 <td align="center">
 
-40
+34
 
 </td>
 
 <td align="center">
 
-Excelsior
+Heracles
 
 </td>
 
 <td align="center">
 
-AZ Alkmaar
+Sparta Rotterdam
+
+</td>
+
+<td align="center">
+
+2.00
+
+</td>
+
+<td align="center">
+
+1.10
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+Heracles
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+11
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+34
+
+</td>
+
+<td align="center">
+
+Twente
+
+</td>
+
+<td align="center">
+
+Den Haag
+
+</td>
+
+<td align="center">
+
+1.80
 
 </td>
 
 <td align="center">
 
 1.20
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+Twente
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+12
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+34
+
+</td>
+
+<td align="center">
+
+Vitesse
+
+</td>
+
+<td align="center">
+
+Willem II
+
+</td>
+
+<td align="center">
+
+2.20
+
+</td>
+
+<td align="center">
+
+1.00
 
 </td>
 
@@ -1695,13 +1445,263 @@ AZ Alkmaar
 
 <td align="center">
 
+Vitesse
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+13
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+34
+
+</td>
+
+<td align="center">
+
+Zwolle
+
+</td>
+
+<td align="center">
+
+VVV Venlo
+
+</td>
+
+<td align="center">
+
+2.00
+
+</td>
+
+<td align="center">
+
+1.10
+
+</td>
+
+<td align="center">
+
+2.00
+
+</td>
+
+<td align="center">
+
 1.00
 
 </td>
 
 <td align="center">
 
-AZ Alkmaar
+Zwolle
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+14
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+34
+
+</td>
+
+<td align="center">
+
+Heerenveen
+
+</td>
+
+<td align="center">
+
+Waalwijk
+
+</td>
+
+<td align="center">
+
+2.40
+
+</td>
+
+<td align="center">
+
+0.90
+
+</td>
+
+<td align="center">
+
+2.00
+
+</td>
+
+<td align="center">
+
+0.00
+
+</td>
+
+<td align="center">
+
+Heerenveen
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+15
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+34
+
+</td>
+
+<td align="center">
+
+For Sittard
+
+</td>
+
+<td align="center">
+
+PSV Eindhoven
+
+</td>
+
+<td align="center">
+
+0.90
+
+</td>
+
+<td align="center">
+
+2.50
+
+</td>
+
+<td align="center">
+
+0.00
+
+</td>
+
+<td align="center">
+
+2.00
+
+</td>
+
+<td align="center">
+
+PSV Eindhoven
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+16
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+34
+
+</td>
+
+<td align="center">
+
+Feyenoord
+
+</td>
+
+<td align="center">
+
+Ajax
+
+</td>
+
+<td align="center">
+
+1.30
+
+</td>
+
+<td align="center">
+
+1.60
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+Ajax
 
 </td>
 
@@ -1717,19 +1717,467 @@ AZ Alkmaar
 
 <td align="center">
 
-2018/2019
+2019/2020
 
 </td>
 
 <td align="center">
 
-40
+34
 
 </td>
 
 <td align="center">
 
-For Sittard
+Groningen
+
+</td>
+
+<td align="center">
+
+AZ Alkmaar
+
+</td>
+
+<td align="center">
+
+1.40
+
+</td>
+
+<td align="center">
+
+1.60
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+AZ Alkmaar
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+18
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+34
+
+</td>
+
+<td align="center">
+
+FC Emmen
+
+</td>
+
+<td align="center">
+
+Utrecht
+
+</td>
+
+<td align="center">
+
+1.30
+
+</td>
+
+<td align="center">
+
+1.70
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+Utrecht
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+19
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+36
+
+</td>
+
+<td align="center">
+
+Sparta Rotterdam
+
+</td>
+
+<td align="center">
+
+Heerenveen
+
+</td>
+
+<td align="center">
+
+1.50
+
+</td>
+
+<td align="center">
+
+1.40
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+Sparta Rotterdam
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+20
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+36
+
+</td>
+
+<td align="center">
+
+VVV Venlo
+
+</td>
+
+<td align="center">
+
+Willem II
+
+</td>
+
+<td align="center">
+
+1.50
+
+</td>
+
+<td align="center">
+
+1.40
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+VVV Venlo
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+21
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+36
+
+</td>
+
+<td align="center">
+
+PSV Eindhoven
+
+</td>
+
+<td align="center">
+
+Heracles
+
+</td>
+
+<td align="center">
+
+2.90
+
+</td>
+
+<td align="center">
+
+0.80
+
+</td>
+
+<td align="center">
+
+2.00
+
+</td>
+
+<td align="center">
+
+0.00
+
+</td>
+
+<td align="center">
+
+PSV Eindhoven
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+22
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+36
+
+</td>
+
+<td align="center">
+
+AZ Alkmaar
+
+</td>
+
+<td align="center">
+
+Vitesse
+
+</td>
+
+<td align="center">
+
+2.00
+
+</td>
+
+<td align="center">
+
+1.10
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+AZ Alkmaar
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+23
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+36
+
+</td>
+
+<td align="center">
+
+Utrecht
+
+</td>
+
+<td align="center">
+
+Groningen
+
+</td>
+
+<td align="center">
+
+2.00
+
+</td>
+
+<td align="center">
+
+1.10
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+Utrecht
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+24
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+36
+
+</td>
+
+<td align="center">
+
+Waalwijk
 
 </td>
 
@@ -1747,13 +2195,13 @@ Feyenoord
 
 <td align="center">
 
-2.30
+2.20
 
 </td>
 
 <td align="center">
 
-1.00
+0.00
 
 </td>
 
@@ -1775,25 +2223,403 @@ Feyenoord
 
 <td align="center">
 
-18
+25
 
 </td>
 
 <td align="center">
 
-2018/2019
+2019/2020
 
 </td>
 
 <td align="center">
 
-40
+36
 
 </td>
 
 <td align="center">
 
-VVV Venlo
+Ajax
+
+</td>
+
+<td align="center">
+
+Zwolle
+
+</td>
+
+<td align="center">
+
+3.30
+
+</td>
+
+<td align="center">
+
+0.60
+
+</td>
+
+<td align="center">
+
+3.00
+
+</td>
+
+<td align="center">
+
+0.00
+
+</td>
+
+<td align="center">
+
+Ajax
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+26
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+36
+
+</td>
+
+<td align="center">
+
+Den Haag
+
+</td>
+
+<td align="center">
+
+FC Emmen
+
+</td>
+
+<td align="center">
+
+1.90
+
+</td>
+
+<td align="center">
+
+1.20
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+Den Haag
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+27
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+36
+
+</td>
+
+<td align="center">
+
+Twente
+
+</td>
+
+<td align="center">
+
+For Sittard
+
+</td>
+
+<td align="center">
+
+2.00
+
+</td>
+
+<td align="center">
+
+1.10
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+Twente
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+28
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+36
+
+</td>
+
+<td align="center">
+
+Utrecht
+
+</td>
+
+<td align="center">
+
+Ajax
+
+</td>
+
+<td align="center">
+
+1.10
+
+</td>
+
+<td align="center">
+
+1.90
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+Ajax
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+29
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+36
+
+</td>
+
+<td align="center">
+
+AZ Alkmaar
+
+</td>
+
+<td align="center">
+
+Feyenoord
+
+</td>
+
+<td align="center">
+
+1.80
+
+</td>
+
+<td align="center">
+
+1.20
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+AZ Alkmaar
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+30
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+37
+
+</td>
+
+<td align="center">
+
+Groningen
+
+</td>
+
+<td align="center">
+
+Heerenveen
+
+</td>
+
+<td align="center">
+
+1.80
+
+</td>
+
+<td align="center">
+
+1.20
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+Groningen
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+31
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+37
 
 </td>
 
@@ -1805,7 +2631,269 @@ Vitesse
 
 <td align="center">
 
+Waalwijk
+
+</td>
+
+<td align="center">
+
+2.80
+
+</td>
+
+<td align="center">
+
+0.80
+
+</td>
+
+<td align="center">
+
+2.00
+
+</td>
+
+<td align="center">
+
+0.00
+
+</td>
+
+<td align="center">
+
+Vitesse
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+32
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+37
+
+</td>
+
+<td align="center">
+
+Feyenoord
+
+</td>
+
+<td align="center">
+
+VVV Venlo
+
+</td>
+
+<td align="center">
+
+2.90
+
+</td>
+
+<td align="center">
+
+0.80
+
+</td>
+
+<td align="center">
+
+2.00
+
+</td>
+
+<td align="center">
+
+0.00
+
+</td>
+
+<td align="center">
+
+Feyenoord
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+33
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+37
+
+</td>
+
+<td align="center">
+
+Heracles
+
+</td>
+
+<td align="center">
+
+AZ Alkmaar
+
+</td>
+
+<td align="center">
+
 1.30
+
+</td>
+
+<td align="center">
+
+1.60
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+AZ Alkmaar
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+34
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+37
+
+</td>
+
+<td align="center">
+
+Willem II
+
+</td>
+
+<td align="center">
+
+Den Haag
+
+</td>
+
+<td align="center">
+
+1.90
+
+</td>
+
+<td align="center">
+
+1.10
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+Willem II
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+35
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+37
+
+</td>
+
+<td align="center">
+
+For Sittard
+
+</td>
+
+<td align="center">
+
+Utrecht
+
+</td>
+
+<td align="center">
+
+1.20
 
 </td>
 
@@ -1829,7 +2917,2503 @@ Vitesse
 
 <td align="center">
 
+Utrecht
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+36
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+37
+
+</td>
+
+<td align="center">
+
+FC Emmen
+
+</td>
+
+<td align="center">
+
+Ajax
+
+</td>
+
+<td align="center">
+
+0.80
+
+</td>
+
+<td align="center">
+
+2.70
+
+</td>
+
+<td align="center">
+
+0.00
+
+</td>
+
+<td align="center">
+
+2.00
+
+</td>
+
+<td align="center">
+
+Ajax
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+37
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+37
+
+</td>
+
+<td align="center">
+
+Zwolle
+
+</td>
+
+<td align="center">
+
+Twente
+
+</td>
+
+<td align="center">
+
+1.80
+
+</td>
+
+<td align="center">
+
+1.20
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+Zwolle
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+38
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+37
+
+</td>
+
+<td align="center">
+
+PSV Eindhoven
+
+</td>
+
+<td align="center">
+
+Sparta Rotterdam
+
+</td>
+
+<td align="center">
+
+3.30
+
+</td>
+
+<td align="center">
+
+0.70
+
+</td>
+
+<td align="center">
+
+3.00
+
+</td>
+
+<td align="center">
+
+0.00
+
+</td>
+
+<td align="center">
+
+PSV Eindhoven
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+39
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+38
+
+</td>
+
+<td align="center">
+
+AZ Alkmaar
+
+</td>
+
+<td align="center">
+
+PSV Eindhoven
+
+</td>
+
+<td align="center">
+
+1.50
+
+</td>
+
+<td align="center">
+
+1.50
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+PSV Eindhoven
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+40
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+38
+
+</td>
+
+<td align="center">
+
+Sparta Rotterdam
+
+</td>
+
+<td align="center">
+
+Zwolle
+
+</td>
+
+<td align="center">
+
+1.60
+
+</td>
+
+<td align="center">
+
+1.30
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+Sparta Rotterdam
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+41
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+38
+
+</td>
+
+<td align="center">
+
+Den Haag
+
+</td>
+
+<td align="center">
+
+Feyenoord
+
+</td>
+
+<td align="center">
+
+1.20
+
+</td>
+
+<td align="center">
+
+1.90
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+Feyenoord
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+42
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+38
+
+</td>
+
+<td align="center">
+
+Waalwijk
+
+</td>
+
+<td align="center">
+
+Willem II
+
+</td>
+
+<td align="center">
+
+1.40
+
+</td>
+
+<td align="center">
+
+1.60
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+Willem II
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+43
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+38
+
+</td>
+
+<td align="center">
+
+Groningen
+
+</td>
+
+<td align="center">
+
+For Sittard
+
+</td>
+
+<td align="center">
+
+2.30
+
+</td>
+
+<td align="center">
+
+0.90
+
+</td>
+
+<td align="center">
+
+2.00
+
+</td>
+
+<td align="center">
+
+0.00
+
+</td>
+
+<td align="center">
+
+Groningen
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+44
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+38
+
+</td>
+
+<td align="center">
+
+Heerenveen
+
+</td>
+
+<td align="center">
+
+FC Emmen
+
+</td>
+
+<td align="center">
+
+2.10
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+2.00
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+Heerenveen
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+45
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+38
+
+</td>
+
+<td align="center">
+
+Utrecht
+
+</td>
+
+<td align="center">
+
+Heracles
+
+</td>
+
+<td align="center">
+
+2.00
+
+</td>
+
+<td align="center">
+
+1.10
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+Utrecht
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+46
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+38
+
+</td>
+
+<td align="center">
+
+Twente
+
+</td>
+
+<td align="center">
+
+VVV Venlo
+
+</td>
+
+<td align="center">
+
+1.90
+
+</td>
+
+<td align="center">
+
+1.10
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+Twente
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+47
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+38
+
+</td>
+
+<td align="center">
+
+Ajax
+
+</td>
+
+<td align="center">
+
 Vitesse
+
+</td>
+
+<td align="center">
+
+2.70
+
+</td>
+
+<td align="center">
+
+0.80
+
+</td>
+
+<td align="center">
+
+2.00
+
+</td>
+
+<td align="center">
+
+0.00
+
+</td>
+
+<td align="center">
+
+Ajax
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+48
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+39
+
+</td>
+
+<td align="center">
+
+PSV Eindhoven
+
+</td>
+
+<td align="center">
+
+Utrecht
+
+</td>
+
+<td align="center">
+
+2.50
+
+</td>
+
+<td align="center">
+
+0.90
+
+</td>
+
+<td align="center">
+
+2.00
+
+</td>
+
+<td align="center">
+
+0.00
+
+</td>
+
+<td align="center">
+
+PSV Eindhoven
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+49
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+39
+
+</td>
+
+<td align="center">
+
+For Sittard
+
+</td>
+
+<td align="center">
+
+AZ Alkmaar
+
+</td>
+
+<td align="center">
+
+1.10
+
+</td>
+
+<td align="center">
+
+2.10
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+2.00
+
+</td>
+
+<td align="center">
+
+AZ Alkmaar
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+50
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+39
+
+</td>
+
+<td align="center">
+
+FC Emmen
+
+</td>
+
+<td align="center">
+
+Waalwijk
+
+</td>
+
+<td align="center">
+
+2.00
+
+</td>
+
+<td align="center">
+
+1.10
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+FC Emmen
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+51
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+39
+
+</td>
+
+<td align="center">
+
+Feyenoord
+
+</td>
+
+<td align="center">
+
+Groningen
+
+</td>
+
+<td align="center">
+
+2.30
+
+</td>
+
+<td align="center">
+
+0.90
+
+</td>
+
+<td align="center">
+
+2.00
+
+</td>
+
+<td align="center">
+
+0.00
+
+</td>
+
+<td align="center">
+
+Feyenoord
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+52
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+39
+
+</td>
+
+<td align="center">
+
+Zwolle
+
+</td>
+
+<td align="center">
+
+Heerenveen
+
+</td>
+
+<td align="center">
+
+1.70
+
+</td>
+
+<td align="center">
+
+1.30
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+Zwolle
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+53
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+39
+
+</td>
+
+<td align="center">
+
+Heracles
+
+</td>
+
+<td align="center">
+
+Twente
+
+</td>
+
+<td align="center">
+
+1.90
+
+</td>
+
+<td align="center">
+
+1.10
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+Heracles
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+54
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+39
+
+</td>
+
+<td align="center">
+
+VVV Venlo
+
+</td>
+
+<td align="center">
+
+Den Haag
+
+</td>
+
+<td align="center">
+
+1.70
+
+</td>
+
+<td align="center">
+
+1.30
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+VVV Venlo
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+55
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+39
+
+</td>
+
+<td align="center">
+
+Willem II
+
+</td>
+
+<td align="center">
+
+Ajax
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+2.30
+
+</td>
+
+<td align="center">
+
+0.00
+
+</td>
+
+<td align="center">
+
+2.00
+
+</td>
+
+<td align="center">
+
+Ajax
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+56
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+39
+
+</td>
+
+<td align="center">
+
+Vitesse
+
+</td>
+
+<td align="center">
+
+Sparta Rotterdam
+
+</td>
+
+<td align="center">
+
+2.40
+
+</td>
+
+<td align="center">
+
+0.90
+
+</td>
+
+<td align="center">
+
+2.00
+
+</td>
+
+<td align="center">
+
+0.00
+
+</td>
+
+<td align="center">
+
+Vitesse
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+57
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+40
+
+</td>
+
+<td align="center">
+
+Ajax
+
+</td>
+
+<td align="center">
+
+VVV Venlo
+
+</td>
+
+<td align="center">
+
+3.80
+
+</td>
+
+<td align="center">
+
+0.60
+
+</td>
+
+<td align="center">
+
+3.00
+
+</td>
+
+<td align="center">
+
+0.00
+
+</td>
+
+<td align="center">
+
+Ajax
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+58
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+40
+
+</td>
+
+<td align="center">
+
+AZ Alkmaar
+
+</td>
+
+<td align="center">
+
+Utrecht
+
+</td>
+
+<td align="center">
+
+2.10
+
+</td>
+
+<td align="center">
+
+1.10
+
+</td>
+
+<td align="center">
+
+2.00
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+AZ Alkmaar
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+59
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+40
+
+</td>
+
+<td align="center">
+
+Groningen
+
+</td>
+
+<td align="center">
+
+Den Haag
+
+</td>
+
+<td align="center">
+
+2.10
+
+</td>
+
+<td align="center">
+
+1.10
+
+</td>
+
+<td align="center">
+
+2.00
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+Groningen
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+60
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+40
+
+</td>
+
+<td align="center">
+
+Heerenveen
+
+</td>
+
+<td align="center">
+
+PSV Eindhoven
+
+</td>
+
+<td align="center">
+
+1.10
+
+</td>
+
+<td align="center">
+
+2.00
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+PSV Eindhoven
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+61
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+40
+
+</td>
+
+<td align="center">
+
+Sparta Rotterdam
+
+</td>
+
+<td align="center">
+
+Willem II
+
+</td>
+
+<td align="center">
+
+1.60
+
+</td>
+
+<td align="center">
+
+1.40
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+Sparta Rotterdam
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+62
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+40
+
+</td>
+
+<td align="center">
+
+Twente
+
+</td>
+
+<td align="center">
+
+Feyenoord
+
+</td>
+
+<td align="center">
+
+1.20
+
+</td>
+
+<td align="center">
+
+1.80
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+Feyenoord
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+63
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+40
+
+</td>
+
+<td align="center">
+
+Vitesse
+
+</td>
+
+<td align="center">
+
+Heracles
+
+</td>
+
+<td align="center">
+
+2.10
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+2.00
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+Vitesse
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+64
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+40
+
+</td>
+
+<td align="center">
+
+Waalwijk
+
+</td>
+
+<td align="center">
+
+For Sittard
+
+</td>
+
+<td align="center">
+
+1.60
+
+</td>
+
+<td align="center">
+
+1.30
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+Waalwijk
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+65
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+40
+
+</td>
+
+<td align="center">
+
+Zwolle
+
+</td>
+
+<td align="center">
+
+FC Emmen
+
+</td>
+
+<td align="center">
+
+2.00
+
+</td>
+
+<td align="center">
+
+1.10
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+Zwolle
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+66
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+41
+
+</td>
+
+<td align="center">
+
+Den Haag
+
+</td>
+
+<td align="center">
+
+Zwolle
+
+</td>
+
+<td align="center">
+
+1.60
+
+</td>
+
+<td align="center">
+
+1.30
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+Den Haag
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+67
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+41
+
+</td>
+
+<td align="center">
+
+FC Emmen
+
+</td>
+
+<td align="center">
+
+AZ Alkmaar
+
+</td>
+
+<td align="center">
+
+1.10
+
+</td>
+
+<td align="center">
+
+2.00
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+AZ Alkmaar
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+68
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+41
+
+</td>
+
+<td align="center">
+
+Feyenoord
+
+</td>
+
+<td align="center">
+
+Vitesse
+
+</td>
+
+<td align="center">
+
+2.00
+
+</td>
+
+<td align="center">
+
+1.10
+
+</td>
+
+<td align="center">
+
+2.00
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+Feyenoord
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+69
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+41
+
+</td>
+
+<td align="center">
+
+Heracles
+
+</td>
+
+<td align="center">
+
+Groningen
+
+</td>
+
+<td align="center">
+
+1.70
+
+</td>
+
+<td align="center">
+
+1.30
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+Heracles
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+70
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+41
+
+</td>
+
+<td align="center">
+
+PSV Eindhoven
+
+</td>
+
+<td align="center">
+
+Waalwijk
+
+</td>
+
+<td align="center">
+
+3.90
+
+</td>
+
+<td align="center">
+
+0.60
+
+</td>
+
+<td align="center">
+
+3.00
+
+</td>
+
+<td align="center">
+
+0.00
+
+</td>
+
+<td align="center">
+
+PSV Eindhoven
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+71
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+41
+
+</td>
+
+<td align="center">
+
+For Sittard
+
+</td>
+
+<td align="center">
+
+Ajax
+
+</td>
+
+<td align="center">
+
+0.80
+
+</td>
+
+<td align="center">
+
+2.80
+
+</td>
+
+<td align="center">
+
+0.00
+
+</td>
+
+<td align="center">
+
+2.00
+
+</td>
+
+<td align="center">
+
+Ajax
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+72
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+41
+
+</td>
+
+<td align="center">
+
+Utrecht
+
+</td>
+
+<td align="center">
+
+Heerenveen
+
+</td>
+
+<td align="center">
+
+2.00
+
+</td>
+
+<td align="center">
+
+1.10
+
+</td>
+
+<td align="center">
+
+2.00
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+Utrecht
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+73
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+41
+
+</td>
+
+<td align="center">
+
+VVV Venlo
+
+</td>
+
+<td align="center">
+
+Sparta Rotterdam
+
+</td>
+
+<td align="center">
+
+1.70
+
+</td>
+
+<td align="center">
+
+1.30
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+VVV Venlo
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+74
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+41
+
+</td>
+
+<td align="center">
+
+Willem II
+
+</td>
+
+<td align="center">
+
+Twente
+
+</td>
+
+<td align="center">
+
+1.90
+
+</td>
+
+<td align="center">
+
+1.20
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+Willem II
 
 </td>
 
@@ -1857,7 +5441,7 @@ print(xtable(eredivisie_sim, align="cccccccc"), type="html")
 
 <!-- html table generated in R 3.6.1 by xtable 1.8-4 package -->
 
-<!-- Sun Aug 16 11:39:17 2020 -->
+<!-- Fri Aug 28 14:44:39 2020 -->
 
 <table border="1">
 
@@ -1921,25 +5505,25 @@ winner
 
 <td align="center">
 
-2018/2019
+2019/2020
 
 </td>
 
 <td align="center">
 
-40
+33
 
 </td>
 
 <td align="center">
 
-Ajax
+Den Haag
 
 </td>
 
 <td align="center">
 
-Utrecht
+For Sittard
 
 </td>
 
@@ -1957,7 +5541,7 @@ Utrecht
 
 <td align="center">
 
-Ajax
+Den Haag
 
 </td>
 
@@ -1973,31 +5557,25 @@ Ajax
 
 <td align="center">
 
-2018/2019
+2019/2020
 
 </td>
 
 <td align="center">
 
-40
+33
 
 </td>
 
 <td align="center">
 
-AZ Alkmaar
+Willem II
 
 </td>
 
 <td align="center">
 
-PSV Eindhoven
-
-</td>
-
-<td align="center">
-
-2.00
+Heerenveen
 
 </td>
 
@@ -2009,7 +5587,13 @@ PSV Eindhoven
 
 <td align="center">
 
-AZ Alkmaar
+4.00
+
+</td>
+
+<td align="center">
+
+Heerenveen
 
 </td>
 
@@ -2025,13 +5609,331 @@ AZ Alkmaar
 
 <td align="center">
 
-2018/2019
+2019/2020
 
 </td>
 
 <td align="center">
 
-40
+33
+
+</td>
+
+<td align="center">
+
+Ajax
+
+</td>
+
+<td align="center">
+
+Twente
+
+</td>
+
+<td align="center">
+
+4.00
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+Ajax
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+4
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+33
+
+</td>
+
+<td align="center">
+
+Utrecht
+
+</td>
+
+<td align="center">
+
+Vitesse
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+3.00
+
+</td>
+
+<td align="center">
+
+Vitesse
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+5
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+33
+
+</td>
+
+<td align="center">
+
+Zwolle
+
+</td>
+
+<td align="center">
+
+Heracles
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+0.00
+
+</td>
+
+<td align="center">
+
+Zwolle
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+6
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+33
+
+</td>
+
+<td align="center">
+
+Sparta Rotterdam
+
+</td>
+
+<td align="center">
+
+Feyenoord
+
+</td>
+
+<td align="center">
+
+0.00
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+Feyenoord
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+7
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+33
+
+</td>
+
+<td align="center">
+
+PSV Eindhoven
+
+</td>
+
+<td align="center">
+
+FC Emmen
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+Draw
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+8
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+33
+
+</td>
+
+<td align="center">
+
+VVV Venlo
+
+</td>
+
+<td align="center">
+
+AZ Alkmaar
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+3.00
+
+</td>
+
+<td align="center">
+
+AZ Alkmaar
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+9
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+33
+
+</td>
+
+<td align="center">
+
+Waalwijk
 
 </td>
 
@@ -2043,7 +5945,157 @@ Groningen
 
 <td align="center">
 
-For Sittard
+1.00
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+Draw
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+10
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+34
+
+</td>
+
+<td align="center">
+
+Heracles
+
+</td>
+
+<td align="center">
+
+Sparta Rotterdam
+
+</td>
+
+<td align="center">
+
+0.00
+
+</td>
+
+<td align="center">
+
+2.00
+
+</td>
+
+<td align="center">
+
+Sparta Rotterdam
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+11
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+34
+
+</td>
+
+<td align="center">
+
+Twente
+
+</td>
+
+<td align="center">
+
+Den Haag
+
+</td>
+
+<td align="center">
+
+3.00
+
+</td>
+
+<td align="center">
+
+2.00
+
+</td>
+
+<td align="center">
+
+Twente
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+12
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+34
+
+</td>
+
+<td align="center">
+
+Vitesse
+
+</td>
+
+<td align="center">
+
+Willem II
 
 </td>
 
@@ -2061,237 +6113,29 @@ For Sittard
 
 <td align="center">
 
-Groningen
-
-</td>
-
-</tr>
-
-<tr>
-
-<td align="center">
-
-4
-
-</td>
-
-<td align="center">
-
-2018/2019
-
-</td>
-
-<td align="center">
-
-40
-
-</td>
-
-<td align="center">
-
-Feyenoord
-
-</td>
-
-<td align="center">
-
-Den Haag
-
-</td>
-
-<td align="center">
-
-2.00
-
-</td>
-
-<td align="center">
-
-1.00
-
-</td>
-
-<td align="center">
-
-Feyenoord
-
-</td>
-
-</tr>
-
-<tr>
-
-<td align="center">
-
-5
-
-</td>
-
-<td align="center">
-
-2018/2019
-
-</td>
-
-<td align="center">
-
-40
-
-</td>
-
-<td align="center">
-
-Heerenveen
-
-</td>
-
-<td align="center">
-
-NAC Breda
-
-</td>
-
-<td align="center">
-
-1.00
-
-</td>
-
-<td align="center">
-
-1.00
-
-</td>
-
-<td align="center">
-
-Draw
-
-</td>
-
-</tr>
-
-<tr>
-
-<td align="center">
-
-6
-
-</td>
-
-<td align="center">
-
-2018/2019
-
-</td>
-
-<td align="center">
-
-40
-
-</td>
-
-<td align="center">
-
 Vitesse
 
 </td>
 
-<td align="center">
-
-Graafschap
-
-</td>
-
-<td align="center">
-
-0.00
-
-</td>
-
-<td align="center">
-
-0.00
-
-</td>
-
-<td align="center">
-
-Draw
-
-</td>
-
 </tr>
 
 <tr>
 
 <td align="center">
 
-7
+13
 
 </td>
 
 <td align="center">
 
-2018/2019
+2019/2020
 
 </td>
 
 <td align="center">
 
-40
-
-</td>
-
-<td align="center">
-
-Willem II
-
-</td>
-
-<td align="center">
-
-FC Emmen
-
-</td>
-
-<td align="center">
-
-2.00
-
-</td>
-
-<td align="center">
-
-1.00
-
-</td>
-
-<td align="center">
-
-Willem II
-
-</td>
-
-</tr>
-
-<tr>
-
-<td align="center">
-
-8
-
-</td>
-
-<td align="center">
-
-2018/2019
-
-</td>
-
-<td align="center">
-
-40
+34
 
 </td>
 
@@ -2309,7 +6153,59 @@ VVV Venlo
 
 <td align="center">
 
+1.00
+
+</td>
+
+<td align="center">
+
 2.00
+
+</td>
+
+<td align="center">
+
+VVV Venlo
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+14
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+34
+
+</td>
+
+<td align="center">
+
+Heerenveen
+
+</td>
+
+<td align="center">
+
+Waalwijk
+
+</td>
+
+<td align="center">
+
+6.00
 
 </td>
 
@@ -2321,7 +6217,7 @@ VVV Venlo
 
 <td align="center">
 
-Zwolle
+Heerenveen
 
 </td>
 
@@ -2331,37 +6227,31 @@ Zwolle
 
 <td align="center">
 
-9
+15
 
 </td>
 
 <td align="center">
 
-2018/2019
+2019/2020
 
 </td>
 
 <td align="center">
 
-40
+34
 
 </td>
 
 <td align="center">
 
-Heracles
+For Sittard
 
 </td>
 
 <td align="center">
 
-Excelsior
-
-</td>
-
-<td align="center">
-
-2.00
+PSV Eindhoven
 
 </td>
 
@@ -2373,7 +6263,13 @@ Excelsior
 
 <td align="center">
 
-Heracles
+5.00
+
+</td>
+
+<td align="center">
+
+PSV Eindhoven
 
 </td>
 
@@ -2383,25 +6279,233 @@ Heracles
 
 <td align="center">
 
-10
+16
 
 </td>
 
 <td align="center">
 
-2018/2019
+2019/2020
 
 </td>
 
 <td align="center">
 
-40
+34
 
 </td>
 
 <td align="center">
 
-Den Haag
+Feyenoord
+
+</td>
+
+<td align="center">
+
+Ajax
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+0.00
+
+</td>
+
+<td align="center">
+
+Feyenoord
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+17
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+34
+
+</td>
+
+<td align="center">
+
+Groningen
+
+</td>
+
+<td align="center">
+
+AZ Alkmaar
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+0.00
+
+</td>
+
+<td align="center">
+
+Groningen
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+18
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+34
+
+</td>
+
+<td align="center">
+
+FC Emmen
+
+</td>
+
+<td align="center">
+
+Utrecht
+
+</td>
+
+<td align="center">
+
+0.00
+
+</td>
+
+<td align="center">
+
+2.00
+
+</td>
+
+<td align="center">
+
+Utrecht
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+19
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+36
+
+</td>
+
+<td align="center">
+
+Sparta Rotterdam
+
+</td>
+
+<td align="center">
+
+Heerenveen
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+Draw
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+20
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+36
+
+</td>
+
+<td align="center">
+
+VVV Venlo
 
 </td>
 
@@ -2435,31 +6539,187 @@ Draw
 
 <td align="center">
 
-11
+21
 
 </td>
 
 <td align="center">
 
-2018/2019
+2019/2020
 
 </td>
 
 <td align="center">
 
-40
+36
 
 </td>
 
 <td align="center">
 
-Graafschap
+PSV Eindhoven
 
 </td>
 
 <td align="center">
 
-Ajax
+Heracles
+
+</td>
+
+<td align="center">
+
+3.00
+
+</td>
+
+<td align="center">
+
+0.00
+
+</td>
+
+<td align="center">
+
+PSV Eindhoven
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+22
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+36
+
+</td>
+
+<td align="center">
+
+AZ Alkmaar
+
+</td>
+
+<td align="center">
+
+Vitesse
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+0.00
+
+</td>
+
+<td align="center">
+
+AZ Alkmaar
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+23
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+36
+
+</td>
+
+<td align="center">
+
+Utrecht
+
+</td>
+
+<td align="center">
+
+Groningen
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+0.00
+
+</td>
+
+<td align="center">
+
+Utrecht
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+24
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+36
+
+</td>
+
+<td align="center">
+
+Waalwijk
+
+</td>
+
+<td align="center">
+
+Feyenoord
 
 </td>
 
@@ -2477,6 +6737,58 @@ Ajax
 
 <td align="center">
 
+Feyenoord
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+25
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+36
+
+</td>
+
+<td align="center">
+
+Ajax
+
+</td>
+
+<td align="center">
+
+Zwolle
+
+</td>
+
+<td align="center">
+
+7.00
+
+</td>
+
+<td align="center">
+
+0.00
+
+</td>
+
+<td align="center">
+
 Ajax
 
 </td>
@@ -2487,19 +6799,123 @@ Ajax
 
 <td align="center">
 
-12
+26
 
 </td>
 
 <td align="center">
 
-2018/2019
+2019/2020
 
 </td>
 
 <td align="center">
 
-40
+36
+
+</td>
+
+<td align="center">
+
+Den Haag
+
+</td>
+
+<td align="center">
+
+FC Emmen
+
+</td>
+
+<td align="center">
+
+3.00
+
+</td>
+
+<td align="center">
+
+0.00
+
+</td>
+
+<td align="center">
+
+Den Haag
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+27
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+36
+
+</td>
+
+<td align="center">
+
+Twente
+
+</td>
+
+<td align="center">
+
+For Sittard
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+2.00
+
+</td>
+
+<td align="center">
+
+For Sittard
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+28
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+36
 
 </td>
 
@@ -2511,13 +6927,13 @@ Utrecht
 
 <td align="center">
 
-Heerenveen
+Ajax
 
 </td>
 
 <td align="center">
 
-2.00
+1.00
 
 </td>
 
@@ -2539,31 +6955,291 @@ Utrecht
 
 <td align="center">
 
-13
+29
 
 </td>
 
 <td align="center">
 
-2018/2019
+2019/2020
 
 </td>
 
 <td align="center">
 
-40
+36
 
 </td>
 
 <td align="center">
 
-NAC Breda
+AZ Alkmaar
 
 </td>
 
 <td align="center">
 
-Zwolle
+Feyenoord
+
+</td>
+
+<td align="center">
+
+0.00
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+Feyenoord
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+30
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+37
+
+</td>
+
+<td align="center">
+
+Groningen
+
+</td>
+
+<td align="center">
+
+Heerenveen
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+0.00
+
+</td>
+
+<td align="center">
+
+Groningen
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+31
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+37
+
+</td>
+
+<td align="center">
+
+Vitesse
+
+</td>
+
+<td align="center">
+
+Waalwijk
+
+</td>
+
+<td align="center">
+
+6.00
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+Vitesse
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+32
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+37
+
+</td>
+
+<td align="center">
+
+Feyenoord
+
+</td>
+
+<td align="center">
+
+VVV Venlo
+
+</td>
+
+<td align="center">
+
+2.00
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+Feyenoord
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+33
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+37
+
+</td>
+
+<td align="center">
+
+Heracles
+
+</td>
+
+<td align="center">
+
+AZ Alkmaar
+
+</td>
+
+<td align="center">
+
+0.00
+
+</td>
+
+<td align="center">
+
+2.00
+
+</td>
+
+<td align="center">
+
+AZ Alkmaar
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+34
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+37
+
+</td>
+
+<td align="center">
+
+Willem II
+
+</td>
+
+<td align="center">
+
+Den Haag
 
 </td>
 
@@ -2581,7 +7257,7 @@ Zwolle
 
 <td align="center">
 
-Zwolle
+Den Haag
 
 </td>
 
@@ -2591,15 +7267,263 @@ Zwolle
 
 <td align="center">
 
-14
+35
 
 </td>
 
 <td align="center">
 
-2018/2019
+2019/2020
 
 </td>
+
+<td align="center">
+
+37
+
+</td>
+
+<td align="center">
+
+For Sittard
+
+</td>
+
+<td align="center">
+
+Utrecht
+
+</td>
+
+<td align="center">
+
+3.00
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+For Sittard
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+36
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+37
+
+</td>
+
+<td align="center">
+
+FC Emmen
+
+</td>
+
+<td align="center">
+
+Ajax
+
+</td>
+
+<td align="center">
+
+0.00
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+Ajax
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+37
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+37
+
+</td>
+
+<td align="center">
+
+Zwolle
+
+</td>
+
+<td align="center">
+
+Twente
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+2.00
+
+</td>
+
+<td align="center">
+
+Twente
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+38
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+37
+
+</td>
+
+<td align="center">
+
+PSV Eindhoven
+
+</td>
+
+<td align="center">
+
+Sparta Rotterdam
+
+</td>
+
+<td align="center">
+
+5.00
+
+</td>
+
+<td align="center">
+
+0.00
+
+</td>
+
+<td align="center">
+
+PSV Eindhoven
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+39
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+38
+
+</td>
+
+<td align="center">
+
+AZ Alkmaar
+
+</td>
+
+<td align="center">
+
+PSV Eindhoven
+
+</td>
+
+<td align="center">
+
+3.00
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+AZ Alkmaar
+
+</td>
+
+</tr>
+
+<tr>
 
 <td align="center">
 
@@ -2609,7 +7533,279 @@ Zwolle
 
 <td align="center">
 
-PSV Eindhoven
+2019/2020
+
+</td>
+
+<td align="center">
+
+38
+
+</td>
+
+<td align="center">
+
+Sparta Rotterdam
+
+</td>
+
+<td align="center">
+
+Zwolle
+
+</td>
+
+<td align="center">
+
+3.00
+
+</td>
+
+<td align="center">
+
+0.00
+
+</td>
+
+<td align="center">
+
+Sparta Rotterdam
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+41
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+38
+
+</td>
+
+<td align="center">
+
+Den Haag
+
+</td>
+
+<td align="center">
+
+Feyenoord
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+Draw
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+42
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+38
+
+</td>
+
+<td align="center">
+
+Waalwijk
+
+</td>
+
+<td align="center">
+
+Willem II
+
+</td>
+
+<td align="center">
+
+3.00
+
+</td>
+
+<td align="center">
+
+0.00
+
+</td>
+
+<td align="center">
+
+Waalwijk
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+43
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+38
+
+</td>
+
+<td align="center">
+
+Groningen
+
+</td>
+
+<td align="center">
+
+For Sittard
+
+</td>
+
+<td align="center">
+
+4.00
+
+</td>
+
+<td align="center">
+
+0.00
+
+</td>
+
+<td align="center">
+
+Groningen
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+44
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+38
+
+</td>
+
+<td align="center">
+
+Heerenveen
+
+</td>
+
+<td align="center">
+
+FC Emmen
+
+</td>
+
+<td align="center">
+
+0.00
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+FC Emmen
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+45
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+38
+
+</td>
+
+<td align="center">
+
+Utrecht
 
 </td>
 
@@ -2627,65 +7823,13 @@ Heracles
 
 <td align="center">
 
-2.00
+0.00
 
 </td>
 
 <td align="center">
 
-Draw
-
-</td>
-
-</tr>
-
-<tr>
-
-<td align="center">
-
-15
-
-</td>
-
-<td align="center">
-
-2018/2019
-
-</td>
-
-<td align="center">
-
-40
-
-</td>
-
-<td align="center">
-
-FC Emmen
-
-</td>
-
-<td align="center">
-
-Groningen
-
-</td>
-
-<td align="center">
-
-1.00
-
-</td>
-
-<td align="center">
-
-1.00
-
-</td>
-
-<td align="center">
-
-Draw
+Utrecht
 
 </td>
 
@@ -2695,135 +7839,31 @@ Draw
 
 <td align="center">
 
-16
+46
 
 </td>
 
 <td align="center">
 
-2018/2019
+2019/2020
 
 </td>
 
 <td align="center">
 
-40
+38
 
 </td>
 
 <td align="center">
 
-Excelsior
-
-</td>
-
-<td align="center">
-
-AZ Alkmaar
-
-</td>
-
-<td align="center">
-
-1.00
-
-</td>
-
-<td align="center">
-
-1.00
-
-</td>
-
-<td align="center">
-
-Draw
-
-</td>
-
-</tr>
-
-<tr>
-
-<td align="center">
-
-17
-
-</td>
-
-<td align="center">
-
-2018/2019
-
-</td>
-
-<td align="center">
-
-40
-
-</td>
-
-<td align="center">
-
-For Sittard
-
-</td>
-
-<td align="center">
-
-Feyenoord
-
-</td>
-
-<td align="center">
-
-1.00
-
-</td>
-
-<td align="center">
-
-3.00
-
-</td>
-
-<td align="center">
-
-Feyenoord
-
-</td>
-
-</tr>
-
-<tr>
-
-<td align="center">
-
-18
-
-</td>
-
-<td align="center">
-
-2018/2019
-
-</td>
-
-<td align="center">
-
-40
+Twente
 
 </td>
 
 <td align="center">
 
 VVV Venlo
-
-</td>
-
-<td align="center">
-
-Vitesse
 
 </td>
 
@@ -2841,7 +7881,1463 @@ Vitesse
 
 <td align="center">
 
+Twente
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+47
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+38
+
+</td>
+
+<td align="center">
+
+Ajax
+
+</td>
+
+<td align="center">
+
+Vitesse
+
+</td>
+
+<td align="center">
+
+3.00
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+Ajax
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+48
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+39
+
+</td>
+
+<td align="center">
+
+PSV Eindhoven
+
+</td>
+
+<td align="center">
+
+Utrecht
+
+</td>
+
+<td align="center">
+
+2.00
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+PSV Eindhoven
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+49
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+39
+
+</td>
+
+<td align="center">
+
+For Sittard
+
+</td>
+
+<td align="center">
+
+AZ Alkmaar
+
+</td>
+
+<td align="center">
+
+0.00
+
+</td>
+
+<td align="center">
+
+5.00
+
+</td>
+
+<td align="center">
+
+AZ Alkmaar
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+50
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+39
+
+</td>
+
+<td align="center">
+
+FC Emmen
+
+</td>
+
+<td align="center">
+
+Waalwijk
+
+</td>
+
+<td align="center">
+
+3.00
+
+</td>
+
+<td align="center">
+
+2.00
+
+</td>
+
+<td align="center">
+
+FC Emmen
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+51
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+39
+
+</td>
+
+<td align="center">
+
+Feyenoord
+
+</td>
+
+<td align="center">
+
+Groningen
+
+</td>
+
+<td align="center">
+
+2.00
+
+</td>
+
+<td align="center">
+
+2.00
+
+</td>
+
+<td align="center">
+
+Draw
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+52
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+39
+
+</td>
+
+<td align="center">
+
+Zwolle
+
+</td>
+
+<td align="center">
+
+Heerenveen
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+Draw
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+53
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+39
+
+</td>
+
+<td align="center">
+
+Heracles
+
+</td>
+
+<td align="center">
+
+Twente
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+0.00
+
+</td>
+
+<td align="center">
+
+Heracles
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+54
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+39
+
+</td>
+
+<td align="center">
+
 VVV Venlo
+
+</td>
+
+<td align="center">
+
+Den Haag
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+Draw
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+55
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+39
+
+</td>
+
+<td align="center">
+
+Willem II
+
+</td>
+
+<td align="center">
+
+Ajax
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+2.00
+
+</td>
+
+<td align="center">
+
+Ajax
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+56
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+39
+
+</td>
+
+<td align="center">
+
+Vitesse
+
+</td>
+
+<td align="center">
+
+Sparta Rotterdam
+
+</td>
+
+<td align="center">
+
+5.00
+
+</td>
+
+<td align="center">
+
+0.00
+
+</td>
+
+<td align="center">
+
+Vitesse
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+57
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+40
+
+</td>
+
+<td align="center">
+
+Ajax
+
+</td>
+
+<td align="center">
+
+VVV Venlo
+
+</td>
+
+<td align="center">
+
+5.00
+
+</td>
+
+<td align="center">
+
+0.00
+
+</td>
+
+<td align="center">
+
+Ajax
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+58
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+40
+
+</td>
+
+<td align="center">
+
+AZ Alkmaar
+
+</td>
+
+<td align="center">
+
+Utrecht
+
+</td>
+
+<td align="center">
+
+2.00
+
+</td>
+
+<td align="center">
+
+0.00
+
+</td>
+
+<td align="center">
+
+AZ Alkmaar
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+59
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+40
+
+</td>
+
+<td align="center">
+
+Groningen
+
+</td>
+
+<td align="center">
+
+Den Haag
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+2.00
+
+</td>
+
+<td align="center">
+
+Den Haag
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+60
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+40
+
+</td>
+
+<td align="center">
+
+Heerenveen
+
+</td>
+
+<td align="center">
+
+PSV Eindhoven
+
+</td>
+
+<td align="center">
+
+0.00
+
+</td>
+
+<td align="center">
+
+6.00
+
+</td>
+
+<td align="center">
+
+PSV Eindhoven
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+61
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+40
+
+</td>
+
+<td align="center">
+
+Sparta Rotterdam
+
+</td>
+
+<td align="center">
+
+Willem II
+
+</td>
+
+<td align="center">
+
+4.00
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+Sparta Rotterdam
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+62
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+40
+
+</td>
+
+<td align="center">
+
+Twente
+
+</td>
+
+<td align="center">
+
+Feyenoord
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+0.00
+
+</td>
+
+<td align="center">
+
+Twente
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+63
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+40
+
+</td>
+
+<td align="center">
+
+Vitesse
+
+</td>
+
+<td align="center">
+
+Heracles
+
+</td>
+
+<td align="center">
+
+4.00
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+Vitesse
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+64
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+40
+
+</td>
+
+<td align="center">
+
+Waalwijk
+
+</td>
+
+<td align="center">
+
+For Sittard
+
+</td>
+
+<td align="center">
+
+3.00
+
+</td>
+
+<td align="center">
+
+0.00
+
+</td>
+
+<td align="center">
+
+Waalwijk
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+65
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+40
+
+</td>
+
+<td align="center">
+
+Zwolle
+
+</td>
+
+<td align="center">
+
+FC Emmen
+
+</td>
+
+<td align="center">
+
+2.00
+
+</td>
+
+<td align="center">
+
+2.00
+
+</td>
+
+<td align="center">
+
+Draw
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+66
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+41
+
+</td>
+
+<td align="center">
+
+Den Haag
+
+</td>
+
+<td align="center">
+
+Zwolle
+
+</td>
+
+<td align="center">
+
+4.00
+
+</td>
+
+<td align="center">
+
+0.00
+
+</td>
+
+<td align="center">
+
+Den Haag
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+67
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+41
+
+</td>
+
+<td align="center">
+
+FC Emmen
+
+</td>
+
+<td align="center">
+
+AZ Alkmaar
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+2.00
+
+</td>
+
+<td align="center">
+
+AZ Alkmaar
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+68
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+41
+
+</td>
+
+<td align="center">
+
+Feyenoord
+
+</td>
+
+<td align="center">
+
+Vitesse
+
+</td>
+
+<td align="center">
+
+0.00
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+Vitesse
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+69
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+41
+
+</td>
+
+<td align="center">
+
+Heracles
+
+</td>
+
+<td align="center">
+
+Groningen
+
+</td>
+
+<td align="center">
+
+3.00
+
+</td>
+
+<td align="center">
+
+0.00
+
+</td>
+
+<td align="center">
+
+Heracles
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+70
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+41
+
+</td>
+
+<td align="center">
+
+PSV Eindhoven
+
+</td>
+
+<td align="center">
+
+Waalwijk
+
+</td>
+
+<td align="center">
+
+4.00
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+PSV Eindhoven
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+71
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+41
+
+</td>
+
+<td align="center">
+
+For Sittard
+
+</td>
+
+<td align="center">
+
+Ajax
+
+</td>
+
+<td align="center">
+
+3.00
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+For Sittard
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+72
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+41
+
+</td>
+
+<td align="center">
+
+Utrecht
+
+</td>
+
+<td align="center">
+
+Heerenveen
+
+</td>
+
+<td align="center">
+
+1.00
+
+</td>
+
+<td align="center">
+
+3.00
+
+</td>
+
+<td align="center">
+
+Heerenveen
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+73
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+41
+
+</td>
+
+<td align="center">
+
+VVV Venlo
+
+</td>
+
+<td align="center">
+
+Sparta Rotterdam
+
+</td>
+
+<td align="center">
+
+4.00
+
+</td>
+
+<td align="center">
+
+2.00
+
+</td>
+
+<td align="center">
+
+VVV Venlo
+
+</td>
+
+</tr>
+
+<tr>
+
+<td align="center">
+
+74
+
+</td>
+
+<td align="center">
+
+2019/2020
+
+</td>
+
+<td align="center">
+
+41
+
+</td>
+
+<td align="center">
+
+Willem II
+
+</td>
+
+<td align="center">
+
+Twente
+
+</td>
+
+<td align="center">
+
+2.00
+
+</td>
+
+<td align="center">
+
+2.00
+
+</td>
+
+<td align="center">
+
+Draw
 
 </td>
 
@@ -2943,7 +9439,7 @@ model are very close to the payouts that William Hill offers.
 ```
 
     ##       AZ     Draw      PSV 
-    ## 3.806141 4.385537 1.963693
+    ## 2.665719 4.121634 2.616127
 
 The most likely result is 1 - 1 with a predicted payout of 9.70, which
 can be compared to the William Hill payout of 7.50 for this bet. Thus,
@@ -2985,7 +9481,7 @@ print(xtable(goals_payout, align="cccccccc"), type="html")
 
 <!-- html table generated in R 3.6.1 by xtable 1.8-4 package -->
 
-<!-- Sun Aug 16 11:39:17 2020 -->
+<!-- Fri Aug 28 14:44:39 2020 -->
 
 <table border="1">
 
@@ -3049,43 +9545,43 @@ AZ Alkmaar - 0
 
 <td align="center">
 
-22.50
+19.40
 
 </td>
 
 <td align="center">
 
-12.00
+13.20
 
 </td>
 
 <td align="center">
 
-13.00
+16.90
 
 </td>
 
 <td align="center">
 
-20.50
+34.80
 
 </td>
 
 <td align="center">
 
-47.60
+85.20
 
 </td>
 
 <td align="center">
 
-120.60
+328.50
 
 </td>
 
 <td align="center">
 
-354.30
+1216.20
 
 </td>
 
@@ -3101,43 +9597,43 @@ AZ Alkmaar - 1
 
 <td align="center">
 
-17.30
+12.80
 
 </td>
 
 <td align="center">
 
-9.50
+8.80
 
 </td>
 
 <td align="center">
 
-10.60
+12.10
 
 </td>
 
 <td align="center">
 
-16.90
+23.50
 
 </td>
 
 <td align="center">
 
-38.50
+64.10
 
 </td>
 
 <td align="center">
 
-100.40
+218.40
 
 </td>
 
 <td align="center">
 
-281.20
+789.50
 
 </td>
 
@@ -3153,43 +9649,43 @@ AZ Alkmaar - 2
 
 <td align="center">
 
-27.80
+17.70
 
 </td>
 
 <td align="center">
 
-15.60
+12.20
 
 </td>
 
 <td align="center">
 
-16.50
+16.70
 
 </td>
 
 <td align="center">
 
-28.10
+33.10
 
 </td>
 
 <td align="center">
 
-58.10
+85.90
 
 </td>
 
 <td align="center">
 
-158.50
+274.40
 
 </td>
 
 <td align="center">
 
-436.90
+1285.70
 
 </td>
 
@@ -3205,43 +9701,43 @@ AZ Alkmaar - 3
 
 <td align="center">
 
-64.70
+34.40
 
 </td>
 
 <td align="center">
 
-35.40
+24.10
 
 </td>
 
 <td align="center">
 
-39.60
+35.30
 
 </td>
 
 <td align="center">
 
-66.40
+67.50
 
 </td>
 
 <td align="center">
 
-156.80
+167.30
 
 </td>
 
 <td align="center">
 
-445.50
+542.20
 
 </td>
 
 <td align="center">
 
-1956.50
+2500.00
 
 </td>
 
@@ -3257,43 +9753,43 @@ AZ Alkmaar - 4
 
 <td align="center">
 
-189.10
+95.90
 
 </td>
 
 <td align="center">
 
-116.00
+70.80
 
 </td>
 
 <td align="center">
 
-124.00
+90.40
 
 </td>
 
 <td align="center">
 
-211.30
+172.40
 
 </td>
 
 <td align="center">
 
-483.90
+489.10
 
 </td>
 
 <td align="center">
 
-1216.20
+2045.50
 
 </td>
 
 <td align="center">
 
-3750.00
+4500.00
 
 </td>
 
@@ -3309,37 +9805,37 @@ AZ Alkmaar - 5
 
 <td align="center">
 
-900.00
+298.00
 
 </td>
 
 <td align="center">
 
-412.80
+208.30
 
 </td>
 
 <td align="center">
 
-494.50
+306.10
 
 </td>
 
 <td align="center">
 
-762.70
+633.80
 
 </td>
 
 <td align="center">
 
-2045.50
+1551.70
 
 </td>
 
 <td align="center">
 
-3461.50
+3750.00
 
 </td>
 
@@ -3361,43 +9857,43 @@ AZ Alkmaar - 6
 
 <td align="center">
 
-5000.00
+1071.40
 
 </td>
 
 <td align="center">
 
-1551.70
+918.40
 
 </td>
 
 <td align="center">
 
-2142.90
+833.30
 
 </td>
 
 <td align="center">
 
-5625.00
+3461.50
 
 </td>
 
 <td align="center">
 
-7500.00
-
-</td>
-
-<td align="center">
-
-15000.00
+11250.00
 
 </td>
 
 <td align="center">
 
 22500.00
+
+</td>
+
+<td align="center">
+
+Inf
 
 </td>
 

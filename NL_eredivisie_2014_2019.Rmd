@@ -1,7 +1,7 @@
 ---
 title: "Bayesian estimation of a Poisson model for Dutch football matches odds"
 author: "Piet Stam"
-date: "August 15th, 2020"
+date: "August 28th, 2020"
 output: 
   github_document:
     toc: true
@@ -225,7 +225,7 @@ We first read the Dutch soccer match data of the 2014/15-2018/19 Dutch Eredivisi
 
 ```{r raw_data, cache = 2, dependson = "scan_data_dir"}
 from_year <- 2014
-to_year <- 2019
+to_year <- 2020
 source(paste0("functions/Import_Data_Eredivisie.R"))
 ```
 
