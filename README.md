@@ -1,7 +1,7 @@
 # Modeling match results in the Dutch Eredivisie using a hierarchical Bayesian Poisson model
 
 ## Quick summary
-`r-bayesian-football-odds` is based on the works of [Rasmus Baath](http://www.sumsar.net/blog/2013/07/modeling-match-results-in-la-liga-part-one/). Rasmus Baath submitted his code to the [UseR 2013 data analysis contest](https://www.r-project.org/conferences/useR-2013/) and licensed it under the Creative Commons [Attribution 3.0 Unported license](http://creativecommons.org/licenses/by/3.0/). 
+`r-bayesian-football-odds` is based on the works of [Rasmus Baath](http://www.sumsar.net/blog/2013/07/modeling-match-results-in-la-liga-part-one/). Rasmus Baath submitted his code to the [UseR 2013 data analysis contest](https://www.r-project.org/conferences/useR-2013/) and licensed it under the Creative Commons [Attribution 3.0 Unported license](http://creativecommons.org/licenses/by/3.0/). My contribution is licensed under the equivalent MIT license as Creative Commons [recommend against](https://creativecommons.org/faq/#can-i-apply-a-creative-commons-license-to-software) using Creative Commons licenses for software.
 
 ## The original works
 Rasmus predicted the results of the 50 last matches of the 2012/2013 Spanish LaLiga season. He used data of the 2008/09-2012/13 seasons (5 seasons in total) to estimate his regression model in a [Bayesian](https://en.wikipedia.org/wiki/Bayes_estimator) way. See [this thread](https://stats.stackexchange.com/questions/252577/bayes-regression-how-is-it-done-in-comparison-to-standard-regression) for an intuitive explanation of the difference between the bayesian approach and the conventional approaches of linear regression and maximum likelihood.
