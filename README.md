@@ -1,7 +1,5 @@
 # Modeling match results in the Dutch Eredivisie using a hierarchical Bayesian Poisson model
 
-> *Copyright 2019 [Piet Stam](http://www.pietstam.nl). The README.md documentation and the .Rmd, .R and .html files are licensed under the Creative Commons [Attribution 4.0 International license](http://creativecommons.org/licenses/by/4.0/).* 
-
 ## Quick summary
 `r-bayesian-football-odds` is based on the works of [Rasmus Baath](http://www.sumsar.net/blog/2013/07/modeling-match-results-in-la-liga-part-one/). Rasmus Baath submitted his code to the [UseR 2013 data analysis contest](https://www.r-project.org/conferences/useR-2013/) and licensed it under the Creative Commons [Attribution 3.0 Unported license](http://creativecommons.org/licenses/by/3.0/). 
 
